@@ -38,6 +38,36 @@ jest.mock('react-native-device-info', () => ({
 jest.mock('@react-native-async-storage/async-storage', () => ({
   getItem: jest.fn().mockResolvedValue(null),
   setItem: jest.fn().mockResolvedValue(undefined),
+  getMany: jest.fn().mockResolvedValue({'@olix/model_path': null, '@olix/model_version': null}),
+  setMany: jest.fn().mockResolvedValue(undefined),
+  removeMany: jest.fn().mockResolvedValue(undefined),
+}));
+
+jest.mock('../src/native/NativeOlixLLM', () => ({
+  NativeOlixLLM: {
+    loadModel: jest.fn(),
+    generateStream: jest.fn(),
+    stopGeneration: jest.fn(),
+  },
+  OlixLLMEventEmitter: {
+    addListener: jest.fn(() => ({remove: jest.fn()})),
+  },
+  LLM_EVENTS: {TOKEN: 'OlixLLM_token', DONE: 'OlixLLM_done', ERROR: 'OlixLLM_error'},
+}));
+
+jest.mock('rn-fetch-blob', () => ({
+  __esModule: true,
+  default: {
+    config: jest.fn(() => ({fetch: jest.fn()})),
+    fetch: jest.fn(),
+    fs: {
+      dirs: {DocumentDir: '/docs'},
+      exists: jest.fn().mockResolvedValue(false),
+      stat: jest.fn(),
+      hash: jest.fn(),
+      unlink: jest.fn(),
+    },
+  },
 }));
 
 import React from 'react';

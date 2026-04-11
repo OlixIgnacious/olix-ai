@@ -54,13 +54,10 @@ import {NativeOlixLLM} from '../../src/native/NativeOlixLLM';
 import {loadModel, generateStream, stopGeneration} from '../../src/native/LLMBridge';
 
 // Typed handle to the mock factory's test helpers
-type MockModule = {
+const {__fireEvent, __clearListeners} = jest.requireMock<{
   __fireEvent(event: string, payload: unknown): void;
   __clearListeners(): void;
-};
-const {__fireEvent, __clearListeners} = jest.requireMock(
-  '../../src/native/NativeOlixLLM',
-) as MockModule;
+}>('../../src/native/NativeOlixLLM');
 
 // jest.mocked() preserves the original type and adds jest.Mock methods without `any`
 const mockLoadModel = jest.mocked(NativeOlixLLM.loadModel);
