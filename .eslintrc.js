@@ -39,7 +39,7 @@ module.exports = {
   overrides: [
     {
       // Test files: relax rules that conflict with jest mock patterns
-      files: ['**/__tests__/**/*.ts', '**/__tests__/**/*.tsx'],
+      files: ['**/__tests__/**/*.ts', '**/__tests__/**/*.tsx', '__tests__/**/*.ts', '__tests__/**/*.tsx'],
       rules: {
         '@typescript-eslint/unbound-method': 'off',
         '@typescript-eslint/no-unsafe-assignment': 'off',

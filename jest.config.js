@@ -15,6 +15,7 @@ module.exports = {
       '|@react-navigation' +
       '|react-native-screens' +
       '|react-native-safe-area-context' +
+      '|rn-fetch-blob' +
       ')/)',
   ],
 };
