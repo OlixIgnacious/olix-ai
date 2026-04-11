@@ -28,6 +28,18 @@ jest.mock('react-native-config', () => ({
   SENTRY_DSN: '',
 }));
 
+jest.mock('react-native-device-info', () => ({
+  getTotalMemory: jest.fn().mockResolvedValue(8 * 1024 * 1024 * 1024),
+  getFreeDiskStorage: jest.fn().mockResolvedValue(4 * 1024 * 1024 * 1024),
+  getSystemVersion: jest.fn().mockReturnValue('17.0'),
+  getApiLevel: jest.fn().mockResolvedValue(34),
+}));
+
+jest.mock('@react-native-async-storage/async-storage', () => ({
+  getItem: jest.fn().mockResolvedValue(null),
+  setItem: jest.fn().mockResolvedValue(undefined),
+}));
+
 import React from 'react';
 import ReactTestRenderer from 'react-test-renderer';
 import App from '../App';
