@@ -8,6 +8,7 @@ module.exports = {
   },
 
   // Extend the RN preset's default to also transform React Navigation packages
+  // and uuid (pure-ESM package that needs Babel transpilation in Jest).
   transformIgnorePatterns: [
     'node_modules/(?!(' +
       '(jest-)?react-native' +
@@ -16,6 +17,10 @@ module.exports = {
       '|react-native-screens' +
       '|react-native-safe-area-context' +
       '|rn-fetch-blob' +
+      '|uuid' +
       ')/)',
   ],
+
+  // helpers.ts inside __tests__/ is a shared utility, not a test suite.
+  testPathIgnorePatterns: ['/node_modules/', '/__tests__/db/helpers\\.ts$'],
 };
