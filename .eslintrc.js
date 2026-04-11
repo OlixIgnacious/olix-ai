@@ -15,6 +15,9 @@ module.exports = {
   rules: {
     'prettier/prettier': 'error',
 
+    // Allow `void promise()` as an explicit opt-out for floating promises in useEffect
+    'no-void': ['error', {allowAsStatement: true}],
+
     // No any types — enforced hard
     '@typescript-eslint/no-explicit-any': 'error',
     '@typescript-eslint/no-unsafe-assignment': 'error',
@@ -39,5 +42,19 @@ module.exports = {
     'metro.config.js',
     'jest.config.js',
     '.eslintrc.js',
+  ],
+  overrides: [
+    {
+      // Test files: relax rules that conflict with jest mock patterns
+      files: ['**/__tests__/**/*.{ts,tsx}'],
+      rules: {
+        // jest mock methods (toHaveBeenCalledWith, etc.) trip this rule incorrectly
+        '@typescript-eslint/unbound-method': 'off',
+        // Tests often need unsafe operations when working with mocks
+        '@typescript-eslint/no-unsafe-assignment': 'off',
+        '@typescript-eslint/no-unsafe-call': 'off',
+        '@typescript-eslint/no-unsafe-member-access': 'off',
+      },
+    },
   ],
 };
