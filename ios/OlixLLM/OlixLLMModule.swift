@@ -1,5 +1,9 @@
 import Foundation
+// MediaPipeTasksGenai is added via Swift Package Manager in Xcode.
+// See ios/Podfile for setup instructions.
+#if canImport(MediaPipeTasksGenai)
 import MediaPipeTasksGenai
+#endif
 
 // MARK: - OlixLLMModule
 
@@ -27,7 +31,9 @@ final class OlixLLMModule: RCTEventEmitter {
 
   // MARK: State
 
+#if canImport(MediaPipeTasksGenai)
   private var inference: LlmInference?
+#endif
   private var isCancelled = false
   private let llmQueue = DispatchQueue(label: "com.olix.llm", qos: .userInitiated)
 
@@ -43,6 +49,7 @@ final class OlixLLMModule: RCTEventEmitter {
     llmQueue.async { [weak self] in
       guard let self else { return }
 
+#if canImport(MediaPipeTasksGenai)
       do {
         let options = LlmInference.Options(modelPath: path)
         options.maxTokens = 1024
@@ -56,6 +63,9 @@ final class OlixLLMModule: RCTEventEmitter {
       } catch {
         reject("LOAD_MODEL_FAILED", error.localizedDescription, error)
       }
+#else
+      reject("NOT_AVAILABLE", "MediaPipeTasksGenai not linked. Add via SPM in Xcode.", nil)
+#endif
     }
   }
 
@@ -77,6 +87,7 @@ final class OlixLLMModule: RCTEventEmitter {
     llmQueue.async { [weak self] in
       guard let self else { return }
 
+#if canImport(MediaPipeTasksGenai)
       guard let inference = self.inference else {
         reject("MODEL_NOT_LOADED", "Call loadModel before generateStream", nil)
         return
@@ -121,6 +132,9 @@ final class OlixLLMModule: RCTEventEmitter {
       } catch {
         reject("GENERATION_FAILED", error.localizedDescription, error)
       }
+#else
+      reject("NOT_AVAILABLE", "MediaPipeTasksGenai not linked. Add via SPM in Xcode.", nil)
+#endif
     }
   }
 

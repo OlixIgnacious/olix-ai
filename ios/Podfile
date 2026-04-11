@@ -5,6 +5,7 @@ require Pod::Executable.execute_command('node', ['-p',
     {paths: [process.argv[1]]},
   )', __dir__]).strip
 
+
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
 
@@ -17,18 +18,17 @@ end
 target 'Olix' do
   config = use_native_modules!
 
-  # MediaPipeTasksGenai requires static frameworks linkage.
-  # This must come before use_react_native! so it applies to all pods.
-  use_frameworks! :linkage => :static
-
   use_react_native!(
     :path => config[:reactNativePath],
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  # On-device LLM inference via MediaPipe
-  pod 'MediaPipeTasksGenai'
+  # MediaPipeTasksGenai is distributed via Swift Package Manager, not CocoaPods.
+  # After pod install, open Olix.xcworkspace in Xcode and add:
+  #   File > Add Package Dependencies
+  #   URL: https://github.com/google-ai-edge/mediapipe
+  #   Add product: MediaPipeTasksGenai → target: Olix
 
   post_install do |installer|
     react_native_post_install(
@@ -37,13 +37,5 @@ target 'Olix' do
       :mac_catalyst_enabled => false,
       # :ccache_enabled => true
     )
-
-    # MediaPipeTasksGenai ships as an xcframework — ensure it is excluded
-    # from code signing to avoid "bundle format unrecognized" errors.
-    installer.pods_project.targets.each do |target|
-      target.build_configurations.each do |config|
-        config.build_settings['VALIDATE_WORKSPACE'] = 'NO'
-      end
-    end
   end
 end
