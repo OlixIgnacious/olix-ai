@@ -1,0 +1,6 @@
+#include "../Pods/Target Support Files/Pods-Olix/Pods-Olix.release-prod.xcconfig"
+
+// Prod environment — bundle com.olix
+PRODUCT_BUNDLE_IDENTIFIER = com.olix
+DISPLAY_NAME = Olix
+APP_ENV = prod

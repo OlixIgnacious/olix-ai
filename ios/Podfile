@@ -5,6 +5,7 @@ require Pod::Executable.execute_command('node', ['-p',
     {paths: [process.argv[1]]},
   )', __dir__]).strip
 
+
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
 
@@ -22,6 +23,12 @@ target 'Olix' do
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
+
+  # MediaPipeTasksGenai is distributed via Swift Package Manager, not CocoaPods.
+  # After pod install, open Olix.xcworkspace in Xcode and add:
+  #   File > Add Package Dependencies
+  #   URL: https://github.com/google-ai-edge/mediapipe
+  #   Add product: MediaPipeTasksGenai → target: Olix
 
   post_install do |installer|
     react_native_post_install(

@@ -8,25 +8,42 @@
 
 /* Begin PBXBuildFile section */
 		0C80B921A6F3F58F76C31292 /* libPods-Olix.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCACB8F33CDC322A6C60F78 /* libPods-Olix.a */; };
+		113BA79808F45194FBC98796 /* OlixLLMModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = 99E4D9EC05EC7E77FE9A60A3 /* OlixLLMModule.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		61CC825E4981A48728A177B2 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		8B3C96BBD9D9FF7E0AF29701 /* OlixLLMModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8657CEC9C7CBFD2AB9F8C28E /* OlixLLMModule.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		07A4E4F71D53B7086F57E9D2 /* Pods-Olix.release-qa.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Olix.release-qa.xcconfig"; path = "Target Support Files/Pods-Olix/Pods-Olix.release-qa.xcconfig"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* Olix.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Olix.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Olix/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Olix/Info.plist; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = Olix/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		3B4392A12AC88292D35C810B /* Pods-Olix.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Olix.debug.xcconfig"; path = "Target Support Files/Pods-Olix/Pods-Olix.debug.xcconfig"; sourceTree = "<group>"; };
+		53BBF8A57621B09A6053B786 /* Pods-Olix.release-dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Olix.release-dev.xcconfig"; path = "Target Support Files/Pods-Olix/Pods-Olix.release-dev.xcconfig"; sourceTree = "<group>"; };
 		5709B34CF0A7D63546082F79 /* Pods-Olix.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Olix.release.xcconfig"; path = "Target Support Files/Pods-Olix/Pods-Olix.release.xcconfig"; sourceTree = "<group>"; };
 		5DCACB8F33CDC322A6C60F78 /* libPods-Olix.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Olix.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		6D6C8E823640E68D4BB14DD8 /* Debug-QA.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Debug-QA.xcconfig"; sourceTree = "<group>"; };
+		7130039608C35517768DA7D8 /* Debug-Prod.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Debug-Prod.xcconfig"; sourceTree = "<group>"; };
+		72B190279638B2DA09D8884E /* Release-Dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Release-Dev.xcconfig"; sourceTree = "<group>"; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = Olix/AppDelegate.swift; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = Olix/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		8657CEC9C7CBFD2AB9F8C28E /* OlixLLMModule.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OlixLLMModule.swift; sourceTree = "<group>"; };
+		99E4D9EC05EC7E77FE9A60A3 /* OlixLLMModule.mm */ = {isa = PBXFileReference; includeInIndex = 1; path = OlixLLMModule.mm; sourceTree = "<group>"; };
+		9D1876F4C7CB72694D751FD9 /* Debug-Dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Debug-Dev.xcconfig"; sourceTree = "<group>"; };
+		AF061CE1BAD62ED445697601 /* Release-Prod.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Release-Prod.xcconfig"; sourceTree = "<group>"; };
 		B19997F271912FF46A6AD580 /* Dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Dev.xcconfig; sourceTree = "<group>"; };
+		C657B99CDA3C0F05AF345D95 /* Pods-Olix.debug-dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Olix.debug-dev.xcconfig"; path = "Target Support Files/Pods-Olix/Pods-Olix.debug-dev.xcconfig"; sourceTree = "<group>"; };
+		CC7B1753B0C390D552203BF1 /* Pods-Olix.debug-qa.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Olix.debug-qa.xcconfig"; path = "Target Support Files/Pods-Olix/Pods-Olix.debug-qa.xcconfig"; sourceTree = "<group>"; };
+		D38DD04DFE972DEF7AE4D301 /* Pods-Olix.debug-prod.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Olix.debug-prod.xcconfig"; path = "Target Support Files/Pods-Olix/Pods-Olix.debug-prod.xcconfig"; sourceTree = "<group>"; };
 		D7C569D12F1924CDFF677DE6 /* QA.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = QA.xcconfig; sourceTree = "<group>"; };
 		E68D700FDD5F0A95A9115D48 /* Prod.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Prod.xcconfig; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		EE3052515EDE8921A4D6549E /* Release-QA.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Release-QA.xcconfig"; sourceTree = "<group>"; };
+		F4104073499016819ED29A64 /* Pods-Olix.release-prod.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Olix.release-prod.xcconfig"; path = "Target Support Files/Pods-Olix/Pods-Olix.release-prod.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,6 +95,7 @@
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
 				AF2297A930345B55FEC33BA9 /* xcconfigs */,
+				D6DEC8089E5B33C2B0FF3B86 /* OlixLLM */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -98,6 +116,12 @@
 				B19997F271912FF46A6AD580 /* Dev.xcconfig */,
 				D7C569D12F1924CDFF677DE6 /* QA.xcconfig */,
 				E68D700FDD5F0A95A9115D48 /* Prod.xcconfig */,
+				9D1876F4C7CB72694D751FD9 /* Debug-Dev.xcconfig */,
+				72B190279638B2DA09D8884E /* Release-Dev.xcconfig */,
+				6D6C8E823640E68D4BB14DD8 /* Debug-QA.xcconfig */,
+				EE3052515EDE8921A4D6549E /* Release-QA.xcconfig */,
+				7130039608C35517768DA7D8 /* Debug-Prod.xcconfig */,
+				AF061CE1BAD62ED445697601 /* Release-Prod.xcconfig */,
 			);
 			name = xcconfigs;
 			path = xcconfigs;
@@ -108,8 +132,24 @@
 			children = (
 				3B4392A12AC88292D35C810B /* Pods-Olix.debug.xcconfig */,
 				5709B34CF0A7D63546082F79 /* Pods-Olix.release.xcconfig */,
+				C657B99CDA3C0F05AF345D95 /* Pods-Olix.debug-dev.xcconfig */,
+				53BBF8A57621B09A6053B786 /* Pods-Olix.release-dev.xcconfig */,
+				CC7B1753B0C390D552203BF1 /* Pods-Olix.debug-qa.xcconfig */,
+				07A4E4F71D53B7086F57E9D2 /* Pods-Olix.release-qa.xcconfig */,
+				D38DD04DFE972DEF7AE4D301 /* Pods-Olix.debug-prod.xcconfig */,
+				F4104073499016819ED29A64 /* Pods-Olix.release-prod.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		D6DEC8089E5B33C2B0FF3B86 /* OlixLLM */ = {
+			isa = PBXGroup;
+			children = (
+				8657CEC9C7CBFD2AB9F8C28E /* OlixLLMModule.swift */,
+				99E4D9EC05EC7E77FE9A60A3 /* OlixLLMModule.mm */,
+			);
+			name = OlixLLM;
+			path = OlixLLM;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -174,6 +214,7 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				61CC825E4981A48728A177B2 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -260,6 +301,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				761780ED2CA45674006654EE /* AppDelegate.swift in Sources */,
+				8B3C96BBD9D9FF7E0AF29701 /* OlixLLMModule.swift in Sources */,
+				113BA79808F45194FBC98796 /* OlixLLMModule.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -268,7 +311,7 @@
 /* Begin XCBuildConfiguration section */
 		061E4F4F9B241BA00D1407AB /* Debug-Prod */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E68D700FDD5F0A95A9115D48 /* Prod.xcconfig */;
+			baseConfigurationReference = 7130039608C35517768DA7D8 /* Debug-Prod.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
@@ -328,6 +371,10 @@
 				);
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-DRCT_REMOVE_LEGACY_ARCH=1",
+				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
@@ -335,8 +382,12 @@
 					"-DFOLLY_USE_LIBCPP=1",
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
+					"-DRCT_REMOVE_LEGACY_ARCH=1",
 				);
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				SWIFT_ENABLE_EXPLICIT_MODULES = NO;
+				USE_HERMES = true;
 			};
 			name = "Debug-Prod";
 		};
@@ -363,6 +414,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = Olix;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -392,6 +444,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = Olix;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -400,7 +453,7 @@
 		};
 		2330F722D31CC4C4AE957D5F /* Release-QA */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D7C569D12F1924CDFF677DE6 /* QA.xcconfig */;
+			baseConfigurationReference = EE3052515EDE8921A4D6549E /* Release-QA.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
@@ -452,6 +505,10 @@
 					"\"$(inherited)\"",
 				);
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-DRCT_REMOVE_LEGACY_ARCH=1",
+				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
@@ -459,15 +516,19 @@
 					"-DFOLLY_USE_LIBCPP=1",
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
+					"-DRCT_REMOVE_LEGACY_ARCH=1",
 				);
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				SWIFT_ENABLE_EXPLICIT_MODULES = NO;
+				USE_HERMES = true;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = "Release-QA";
 		};
 		2A56FCCF318944EFD94113EF /* Release-Prod */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E68D700FDD5F0A95A9115D48 /* Prod.xcconfig */;
+			baseConfigurationReference = AF061CE1BAD62ED445697601 /* Release-Prod.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -487,6 +548,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = Olix;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -495,7 +557,7 @@
 		};
 		339B22967BB17A35A34C6F70 /* Release-QA */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D7C569D12F1924CDFF677DE6 /* QA.xcconfig */;
+			baseConfigurationReference = EE3052515EDE8921A4D6549E /* Release-QA.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -515,6 +577,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = Olix;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -523,7 +586,7 @@
 		};
 		360D30F9658B34BDFE237F34 /* Debug-Dev */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B19997F271912FF46A6AD580 /* Dev.xcconfig */;
+			baseConfigurationReference = 9D1876F4C7CB72694D751FD9 /* Debug-Dev.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -544,6 +607,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = Olix;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -553,7 +617,7 @@
 		};
 		4129B9A1FEE3062496DAB3EE /* Debug-QA */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D7C569D12F1924CDFF677DE6 /* QA.xcconfig */;
+			baseConfigurationReference = 6D6C8E823640E68D4BB14DD8 /* Debug-QA.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
@@ -613,6 +677,10 @@
 				);
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-DRCT_REMOVE_LEGACY_ARCH=1",
+				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
@@ -620,8 +688,12 @@
 					"-DFOLLY_USE_LIBCPP=1",
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
+					"-DRCT_REMOVE_LEGACY_ARCH=1",
 				);
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				SWIFT_ENABLE_EXPLICIT_MODULES = NO;
+				USE_HERMES = true;
 			};
 			name = "Debug-QA";
 		};
@@ -686,6 +758,10 @@
 				);
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-DRCT_REMOVE_LEGACY_ARCH=1",
+				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
@@ -693,8 +769,13 @@
 					"-DFOLLY_USE_LIBCPP=1",
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
+					"-DRCT_REMOVE_LEGACY_ARCH=1",
 				);
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
+				SWIFT_ENABLE_EXPLICIT_MODULES = NO;
+				USE_HERMES = true;
 			};
 			name = Debug;
 		};
@@ -751,6 +832,10 @@
 					"\"$(inherited)\"",
 				);
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-DRCT_REMOVE_LEGACY_ARCH=1",
+				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
@@ -758,15 +843,19 @@
 					"-DFOLLY_USE_LIBCPP=1",
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
+					"-DRCT_REMOVE_LEGACY_ARCH=1",
 				);
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				SWIFT_ENABLE_EXPLICIT_MODULES = NO;
+				USE_HERMES = true;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
 		8E919E5C9387C18A946CD72C /* Debug-QA */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D7C569D12F1924CDFF677DE6 /* QA.xcconfig */;
+			baseConfigurationReference = 6D6C8E823640E68D4BB14DD8 /* Debug-QA.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -787,6 +876,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = Olix;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -796,7 +886,7 @@
 		};
 		8E999701336F417681126E2C /* Release-Dev */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B19997F271912FF46A6AD580 /* Dev.xcconfig */;
+			baseConfigurationReference = 72B190279638B2DA09D8884E /* Release-Dev.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -816,6 +906,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = Olix;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -824,7 +915,7 @@
 		};
 		94C890C4FC4A98EFD588D147 /* Debug-Prod */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E68D700FDD5F0A95A9115D48 /* Prod.xcconfig */;
+			baseConfigurationReference = 7130039608C35517768DA7D8 /* Debug-Prod.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -845,6 +936,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = Olix;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -854,7 +946,7 @@
 		};
 		CBF5DD20E5FC6F9F85BDDD53 /* Release-Prod */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E68D700FDD5F0A95A9115D48 /* Prod.xcconfig */;
+			baseConfigurationReference = AF061CE1BAD62ED445697601 /* Release-Prod.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
@@ -906,6 +998,10 @@
 					"\"$(inherited)\"",
 				);
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-DRCT_REMOVE_LEGACY_ARCH=1",
+				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
@@ -913,15 +1009,19 @@
 					"-DFOLLY_USE_LIBCPP=1",
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
+					"-DRCT_REMOVE_LEGACY_ARCH=1",
 				);
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				SWIFT_ENABLE_EXPLICIT_MODULES = NO;
+				USE_HERMES = true;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = "Release-Prod";
 		};
 		DCF18B5CCF67FA7462743216 /* Debug-Dev */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B19997F271912FF46A6AD580 /* Dev.xcconfig */;
+			baseConfigurationReference = 9D1876F4C7CB72694D751FD9 /* Debug-Dev.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
@@ -981,6 +1081,10 @@
 				);
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-DRCT_REMOVE_LEGACY_ARCH=1",
+				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
@@ -988,14 +1092,18 @@
 					"-DFOLLY_USE_LIBCPP=1",
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
+					"-DRCT_REMOVE_LEGACY_ARCH=1",
 				);
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				SWIFT_ENABLE_EXPLICIT_MODULES = NO;
+				USE_HERMES = true;
 			};
 			name = "Debug-Dev";
 		};
 		F3F5A69104E766A0FF0CDB01 /* Release-Dev */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B19997F271912FF46A6AD580 /* Dev.xcconfig */;
+			baseConfigurationReference = 72B190279638B2DA09D8884E /* Release-Dev.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
@@ -1047,6 +1155,10 @@
 					"\"$(inherited)\"",
 				);
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-DRCT_REMOVE_LEGACY_ARCH=1",
+				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
@@ -1054,8 +1166,12 @@
 					"-DFOLLY_USE_LIBCPP=1",
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
+					"-DRCT_REMOVE_LEGACY_ARCH=1",
 				);
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				SWIFT_ENABLE_EXPLICIT_MODULES = NO;
+				USE_HERMES = true;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = "Release-Dev";
