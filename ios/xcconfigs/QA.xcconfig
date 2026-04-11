@@ -1,0 +1,4 @@
+// QA environment — bundle com.olix.qa
+PRODUCT_BUNDLE_IDENTIFIER = com.olix.qa
+DISPLAY_NAME = Olix QA
+APP_ENV = qa
