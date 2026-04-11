@@ -78,3 +78,4 @@ yarn-error.log
 !.yarn/sdks
 !.yarn/versions
 .bundle/
+.prompt.md

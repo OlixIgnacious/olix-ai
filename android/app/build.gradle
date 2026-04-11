@@ -141,6 +141,9 @@ dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
 
+    // On-device LLM inference via MediaPipe
+    implementation("com.google.mediapipe:tasks-genai:0.10.24")
+
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")
     } else {

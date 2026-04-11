@@ -29,7 +29,25 @@ module.exports = {
     // React Native specific
     'react-native/no-inline-styles': 'error',
     'react-native/no-raw-text': ['error', {skip: []}],
+
+    // Allow `void promise()` as an explicit floating-promise opt-out in useEffect
+    'no-void': ['error', {allowAsStatement: true}],
   },
+  overrides: [
+    {
+      // Test files: relax rules that conflict with jest mock patterns
+      files: ['**/__tests__/**/*.ts', '**/__tests__/**/*.tsx'],
+      rules: {
+        '@typescript-eslint/unbound-method': 'off',
+        '@typescript-eslint/no-unsafe-assignment': 'off',
+        '@typescript-eslint/no-unsafe-call': 'off',
+        '@typescript-eslint/no-unsafe-member-access': 'off',
+        '@typescript-eslint/no-unsafe-argument': 'off',
+        '@typescript-eslint/no-unnecessary-type-assertion': 'off',
+        'no-void': 'off',
+      },
+    },
+  ],
   ignorePatterns: [
     'node_modules/',
     'android/',
