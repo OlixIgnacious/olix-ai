@@ -272,25 +272,26 @@ export class ModelDownloader {
     const checksumUrl = `${modelUrl}.sha256`;
     logger.debug('ModelDownloader: verifying checksum', {checksumUrl});
 
-    let expected: string;
+    let expected = '';
     try {
       const res = await RNFetchBlob.fetch('GET', checksumUrl);
       const rawText = res.text() as string | Promise<string>;
       const text = typeof rawText === 'string' ? rawText : await rawText;
       expected = text.trim().split(/\s+/)[0] ?? '';
     } catch {
-      if (AppConfig.isDev) {
-        logger.debug('ModelDownloader: skipping checksum in dev (endpoint unavailable)');
-        return;
-      }
-      throw new Error('Failed to fetch model checksum');
+      // Network error fetching checksum — skip in dev, throw in prod
     }
 
-    if (!expected) {
+    // HuggingFace does not serve .sha256 sidecar files; the endpoint returns
+    // a non-hex body (e.g. "---"). Only treat it as a valid checksum if it is
+    // exactly 64 lowercase hex characters (SHA-256 format).
+    const isValidSha256 = /^[0-9a-f]{64}$/i.test(expected);
+    if (!isValidSha256) {
       if (AppConfig.isDev) {
+        logger.debug('ModelDownloader: skipping checksum — no valid SHA-256 from server');
         return;
       }
-      throw new Error('Empty checksum returned from server');
+      throw new Error('Failed to fetch a valid model checksum from server');
     }
 
     const actual = await RNFetchBlob.fs.hash(filePath, 'sha256');
