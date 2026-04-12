@@ -8,8 +8,10 @@
  *   - Persist the downloaded model path and version in AsyncStorage
  *   - Expose a typed progress callback: { received, total, percent, etaSeconds }
  *
- * The model URL is:  ${MODEL_CDN_URL}/gemma-4.task
- * The checksum URL is: ${MODEL_CDN_URL}/gemma-4.task.sha256
+ * The model URL is:  ${MODEL_CDN_URL}/gemma-4-E2B-it.litertlm
+ * The checksum URL is: ${MODEL_CDN_URL}/gemma-4-E2B-it.litertlm.sha256
+ *   (HuggingFace does not serve .sha256 sidecar files; checksum is skipped in
+ *   dev when the endpoint returns 4xx/network error — see verifyChecksum.)
  *
  * Usage:
  *   const dl = new ModelDownloader(onProgress);
@@ -39,7 +41,10 @@ export type ModelInfo = {
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const MODEL_FILENAME = 'gemma-4.task';
+// Gemma 4 E2B instruction-tuned, LiteRT format (2.58 GB).
+// MediaPipe LLM Inference (tasks-genai) loads .litertlm files directly via setModelPath.
+const MODEL_FILENAME = 'gemma-4-E2B-it.litertlm';
+const MODEL_VERSION = 'gemma-4-e2b-it';
 const STORAGE_KEY_MODEL_PATH = '@olix/model_path';
 const STORAGE_KEY_MODEL_VERSION = '@olix/model_version';
 
@@ -230,14 +235,8 @@ export class ModelDownloader {
   }
 
   private async fetchVersion(): Promise<string> {
-    const versionUrl = `${AppConfig.modelCdnUrl}/version.txt`;
-    try {
-      const res = await RNFetchBlob.fetch('GET', versionUrl);
-      const rawText = res.text() as string | Promise<string>;
-      const text = typeof rawText === 'string' ? rawText : await rawText;
-      return text.trim() || 'unknown';
-    } catch {
-      return 'unknown';
-    }
+    // HuggingFace does not serve a version.txt sidecar. Return the compile-time
+    // constant that identifies exactly which model file was downloaded.
+    return MODEL_VERSION;
   }
 }
