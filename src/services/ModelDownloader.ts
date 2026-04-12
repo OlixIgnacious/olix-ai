@@ -83,9 +83,9 @@ export class ModelDownloader {
   // ── Cached model info ───────────────────────────────────────────────────────
 
   static async getStoredModelInfo(): Promise<ModelInfo | null> {
-    const result = await AsyncStorage.getMany([STORAGE_KEY_MODEL_PATH, STORAGE_KEY_MODEL_VERSION]);
-    const pathVal = result[STORAGE_KEY_MODEL_PATH];
-    const versionVal = result[STORAGE_KEY_MODEL_VERSION];
+    const pairs = await AsyncStorage.multiGet([STORAGE_KEY_MODEL_PATH, STORAGE_KEY_MODEL_VERSION]);
+    const pathVal = pairs.find(([k]) => k === STORAGE_KEY_MODEL_PATH)?.[1];
+    const versionVal = pairs.find(([k]) => k === STORAGE_KEY_MODEL_VERSION)?.[1];
     if (pathVal && versionVal) {
       return {path: pathVal, version: versionVal};
     }
@@ -93,7 +93,7 @@ export class ModelDownloader {
   }
 
   static async clearStoredModelInfo(): Promise<void> {
-    await AsyncStorage.removeMany([STORAGE_KEY_MODEL_PATH, STORAGE_KEY_MODEL_VERSION]);
+    await AsyncStorage.multiRemove([STORAGE_KEY_MODEL_PATH, STORAGE_KEY_MODEL_VERSION]);
   }
 
   // ── Private ─────────────────────────────────────────────────────────────────
@@ -168,10 +168,10 @@ export class ModelDownloader {
           }
 
           const version = await this.fetchVersion();
-          await AsyncStorage.setMany({
-            [STORAGE_KEY_MODEL_PATH]: filePath,
-            [STORAGE_KEY_MODEL_VERSION]: version,
-          });
+          await AsyncStorage.multiSet([
+            [STORAGE_KEY_MODEL_PATH, filePath],
+            [STORAGE_KEY_MODEL_VERSION, version],
+          ]);
 
           logger.debug('ModelDownloader: complete', {path: filePath, version});
           resolve(filePath);

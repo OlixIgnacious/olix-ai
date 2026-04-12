@@ -8,28 +8,35 @@ import {DownloadScreen} from '@/screens/DownloadScreen';
 import {ConversationListScreen} from '@/screens/ConversationListScreen';
 import {ChatScreen} from '@/screens/ChatScreen';
 import {SettingsScreen} from '@/screens/SettingsScreen';
+import {ErrorBoundary} from '@/components/ErrorBoundary';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export function RootNavigator(): React.JSX.Element {
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Compatibility" screenOptions={{headerShown: false}}>
-        <Stack.Screen name="Compatibility" component={CompatibilityScreen} />
-        <Stack.Screen name="Blocked" component={BlockedScreen} />
-        <Stack.Screen name="Download" component={DownloadScreen} />
-        <Stack.Screen
-          name="ConversationList"
-          component={ConversationListScreen}
-          options={{headerShown: true, title: 'Olix'}}
-        />
-        <Stack.Screen name="Chat" component={ChatScreen} options={{headerShown: true, title: ''}} />
-        <Stack.Screen
-          name="Settings"
-          component={SettingsScreen}
-          options={{headerShown: true, title: 'Settings'}}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <ErrorBoundary label="App failed to start">
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="Compatibility" screenOptions={{headerShown: false}}>
+          <Stack.Screen name="Compatibility" component={CompatibilityScreen} />
+          <Stack.Screen name="Blocked" component={BlockedScreen} />
+          <Stack.Screen name="Download" component={DownloadScreen} />
+          <Stack.Screen
+            name="ConversationList"
+            component={ConversationListScreen}
+            options={{headerShown: true, title: 'Olix'}}
+          />
+          <Stack.Screen
+            name="Chat"
+            component={ChatScreen}
+            options={{headerShown: true, title: ''}}
+          />
+          <Stack.Screen
+            name="Settings"
+            component={SettingsScreen}
+            options={{headerShown: true, title: 'Settings'}}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </ErrorBoundary>
   );
 }

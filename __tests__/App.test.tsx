@@ -38,9 +38,9 @@ jest.mock('react-native-device-info', () => ({
 jest.mock('@react-native-async-storage/async-storage', () => ({
   getItem: jest.fn().mockResolvedValue(null),
   setItem: jest.fn().mockResolvedValue(undefined),
-  getMany: jest.fn().mockResolvedValue({'@olix/model_path': null, '@olix/model_version': null}),
-  setMany: jest.fn().mockResolvedValue(undefined),
-  removeMany: jest.fn().mockResolvedValue(undefined),
+  multiGet: jest.fn().mockResolvedValue([['@olix/model_path', null], ['@olix/model_version', null]]),
+  multiSet: jest.fn().mockResolvedValue(undefined),
+  multiRemove: jest.fn().mockResolvedValue(undefined),
 }));
 
 jest.mock('../src/native/NativeOlixLLM', () => ({

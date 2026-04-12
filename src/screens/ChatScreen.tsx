@@ -12,6 +12,8 @@
  *   - Auto-title the conversation from the first user message.
  *   - Stop generation when the app is backgrounded.
  *   - Auto-scroll to the latest message as tokens arrive.
+ *   - Detect thermal throttling (token rate drops >60% from peak) and show a
+ *     dismissible warning banner.
  *
  * Abort design note:
  *   `stopGeneration()` suppresses further token events from the native side.
@@ -57,6 +59,15 @@ type StreamingItem = {
 
 type ListItem = Message | StreamingItem;
 
+// ─── Thermal throttle config ──────────────────────────────────────────────────
+
+// Minimum tokens to establish a baseline before comparing rates.
+const THERMAL_BASELINE_TOKENS = 10;
+// Show warning when current rate drops to this fraction of the peak rate.
+const THERMAL_THROTTLE_RATIO = 0.4;
+// Rolling window size (# recent tokens) used to compute current rate.
+const THERMAL_WINDOW = 5;
+
 // ─── Screen ───────────────────────────────────────────────────────────────────
 
 export function ChatScreen({route, navigation}: Props): React.JSX.Element {
@@ -66,11 +77,15 @@ export function ChatScreen({route, navigation}: Props): React.JSX.Element {
   const [streamingContent, setStreamingContent] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [input, setInput] = useState('');
+  const [showThermalWarning, setShowThermalWarning] = useState(false);
 
   const flatListRef = useRef<FlatList<ListItem>>(null);
   // Refs for coordination between handleSend and handleAbort without stale closures
   const isGeneratingRef = useRef(false);
   const accumulatedRef = useRef('');
+  // Thermal throttle tracking — array of recent token arrival timestamps (ms)
+  const tokenTimestampsRef = useRef<number[]>([]);
+  const peakRateRef = useRef(0); // tokens/second
 
   // ── Load messages on mount ──────────────────────────────────────────────
   useEffect(() => {
@@ -102,6 +117,44 @@ export function ChatScreen({route, navigation}: Props): React.JSX.Element {
     flatListRef.current?.scrollToEnd({animated: true});
   }, []);
 
+  // ── Thermal throttle tracking ────────────────────────────────────────────
+  function recordTokenAndCheckThermal(): void {
+    const now = Date.now();
+    const timestamps = tokenTimestampsRef.current;
+    timestamps.push(now);
+
+    // Keep only the last THERMAL_WINDOW timestamps for rolling rate
+    if (timestamps.length > THERMAL_WINDOW) {
+      timestamps.splice(0, timestamps.length - THERMAL_WINDOW);
+    }
+
+    // Need at least 2 points to compute a rate
+    if (timestamps.length < 2) {
+      return;
+    }
+
+    const windowMs = timestamps[timestamps.length - 1]! - timestamps[0]!;
+    if (windowMs <= 0) {
+      return;
+    }
+
+    const currentRate = ((timestamps.length - 1) / windowMs) * 1000; // tokens/sec
+
+    // Update peak once we have enough baseline tokens
+    const totalTokens = tokenTimestampsRef.current.length;
+    if (totalTokens >= THERMAL_BASELINE_TOKENS && currentRate > peakRateRef.current) {
+      peakRateRef.current = currentRate;
+    }
+
+    // Only warn after baseline is established and peak is meaningful
+    if (peakRateRef.current > 0 && totalTokens >= THERMAL_BASELINE_TOKENS) {
+      const ratio = currentRate / peakRateRef.current;
+      if (ratio < THERMAL_THROTTLE_RATIO) {
+        setShowThermalWarning(true);
+      }
+    }
+  }
+
   // ── Send ────────────────────────────────────────────────────────────────
   const handleSend = useCallback(async (): Promise<void> => {
     const text = input.trim();
@@ -110,6 +163,9 @@ export function ChatScreen({route, navigation}: Props): React.JSX.Element {
     }
 
     setInput('');
+    setShowThermalWarning(false);
+    tokenTimestampsRef.current = [];
+    peakRateRef.current = 0;
 
     // 1. Persist user message
     const userMsg = db.messages.create(conversationId, 'user', text);
@@ -144,6 +200,7 @@ export function ChatScreen({route, navigation}: Props): React.JSX.Element {
         }
         accumulatedRef.current += token;
         setStreamingContent(accumulatedRef.current);
+        recordTokenAndCheckThermal();
       });
 
       // Reached only on natural completion (not after stopGeneration)
@@ -190,6 +247,7 @@ export function ChatScreen({route, navigation}: Props): React.JSX.Element {
 
     setStreamingContent('');
     setIsGenerating(false);
+    setShowThermalWarning(false);
     scrollToBottom();
   }
 
@@ -209,6 +267,10 @@ export function ChatScreen({route, navigation}: Props): React.JSX.Element {
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 70}>
+      {showThermalWarning && (
+        <ThermalWarningBanner onDismiss={() => setShowThermalWarning(false)} />
+      )}
+
       <FlatList<ListItem>
         ref={flatListRef}
         data={listItems}
@@ -258,6 +320,21 @@ export function ChatScreen({route, navigation}: Props): React.JSX.Element {
         )}
       </View>
     </KeyboardAvoidingView>
+  );
+}
+
+// ─── Thermal warning banner ───────────────────────────────────────────────────
+
+function ThermalWarningBanner({onDismiss}: {onDismiss: () => void}): React.JSX.Element {
+  return (
+    <View style={styles.thermalBanner}>
+      <Text style={styles.thermalText}>
+        {'⚠ Device is warm — generation may be slower than usual'}
+      </Text>
+      <TouchableOpacity onPress={onDismiss} hitSlop={8}>
+        <Text style={styles.thermalDismiss}>{'✕'}</Text>
+      </TouchableOpacity>
+    </View>
   );
 }
 
@@ -313,5 +390,26 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
     lineHeight: 22,
+  },
+  thermalBanner: {
+    alignItems: 'center',
+    backgroundColor: '#FFF3CD',
+    borderBottomColor: '#FFE08A',
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+  },
+  thermalText: {
+    color: '#7A5C00',
+    flex: 1,
+    fontSize: 12,
+  },
+  thermalDismiss: {
+    color: '#7A5C00',
+    fontSize: 14,
+    fontWeight: '600',
+    marginLeft: 8,
   },
 });

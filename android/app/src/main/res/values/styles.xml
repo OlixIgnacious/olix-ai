@@ -1,9 +1,23 @@
 <resources>
 
-    <!-- Base application theme. -->
+    <!-- Base application theme — applied after splash is dismissed. -->
     <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
-        <!-- Customize your theme here. -->
         <item name="android:editTextBackground">@drawable/rn_edit_text_material</item>
+    </style>
+
+    <!--
+      Launch theme — applied to MainActivity before React Native is ready.
+      Sets a full-screen windowBackground so the splash is visible immediately
+      on cold start with no white flash.
+      MainActivity switches to AppTheme in onCreate() once the bundle is loaded.
+    -->
+    <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash_background</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:statusBarColor">#1A1A1A</item>
+        <item name="android:navigationBarColor">#1A1A1A</item>
     </style>
 
 </resources>

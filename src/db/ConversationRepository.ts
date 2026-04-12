@@ -81,4 +81,9 @@ export class ConversationRepository {
   delete(id: string): void {
     this.db.execute('DELETE FROM conversations WHERE id = ?', [id as SQLArg]);
   }
+
+  /** Delete every conversation and all their messages. */
+  deleteAll(): void {
+    this.db.execute('DELETE FROM conversations');
+  }
 }

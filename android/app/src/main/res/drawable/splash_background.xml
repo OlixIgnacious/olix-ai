@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Splash screen window background — full dark canvas with the "O" ring centred.
+  Used by SplashTheme as android:windowBackground so it's visible immediately
+  on cold start before React Native's JS bundle loads.
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Background fill -->
+    <item>
+        <shape>
+            <solid android:color="#1A1A1A" />
+        </shape>
+    </item>
+    <!-- Centred "O" foreground -->
+    <item
+        android:gravity="center"
+        android:width="96dp"
+        android:height="96dp"
+        android:drawable="@drawable/ic_launcher_foreground" />
+</layer-list>

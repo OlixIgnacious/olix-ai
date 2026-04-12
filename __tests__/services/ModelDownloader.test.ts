@@ -17,9 +17,9 @@ jest.mock('react-native-config', () => ({
 }));
 
 jest.mock('@react-native-async-storage/async-storage', () => ({
-  getMany: jest.fn(),
-  setMany: jest.fn(),
-  removeMany: jest.fn(),
+  multiGet: jest.fn(),
+  multiSet: jest.fn(),
+  multiRemove: jest.fn(),
 }));
 
 // rn-fetch-blob mock — uses a real deferred Promise so resolveDownload /
@@ -102,8 +102,8 @@ const RNFetchBlobMock = jest.requireMock<{
   __resolveTask(r: {path: () => string; respInfo: {status: number}}): void;
   __rejectTask(e: unknown): void;
 }>('rn-fetch-blob');
-const mockGetMany = jest.mocked(AsyncStorage.getMany);
-const mockSetMany = jest.mocked(AsyncStorage.setMany);
+const mockMultiGet = jest.mocked(AsyncStorage.multiGet);
+const mockMultiSet = jest.mocked(AsyncStorage.multiSet);
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -135,36 +135,39 @@ beforeEach(() => {
   RNFetchBlobMock.__setFileSize(0);
   RNFetchBlobMock.__setHash('abc123');
   RNFetchBlobMock.__setFetchText('abc123');
-  mockGetMany.mockResolvedValue({
-    '@olix/model_path': null,
-    '@olix/model_version': null,
-  });
-  mockSetMany.mockResolvedValue(undefined);
+  mockMultiGet.mockResolvedValue([
+    ['@olix/model_path', null],
+    ['@olix/model_version', null],
+  ]);
+  mockMultiSet.mockResolvedValue(undefined);
 });
 
 // ── getStoredModelInfo ────────────────────────────────────────────────────────
 
 describe('ModelDownloader.getStoredModelInfo', () => {
   it('returns null when AsyncStorage has no stored model', async () => {
-    mockGetMany.mockResolvedValueOnce({'@olix/model_path': null, '@olix/model_version': null});
+    mockMultiGet.mockResolvedValueOnce([
+      ['@olix/model_path', null],
+      ['@olix/model_version', null],
+    ]);
     const info = await ModelDownloader.getStoredModelInfo();
     expect(info).toBeNull();
   });
 
   it('returns stored path and version when present', async () => {
-    mockGetMany.mockResolvedValueOnce({
-      '@olix/model_path': '/docs/gemma-4.task',
-      '@olix/model_version': '1.0.0',
-    });
+    mockMultiGet.mockResolvedValueOnce([
+      ['@olix/model_path', '/docs/gemma-4.task'],
+      ['@olix/model_version', '1.0.0'],
+    ]);
     const info = await ModelDownloader.getStoredModelInfo();
     expect(info).toEqual({path: '/docs/gemma-4.task', version: '1.0.0'});
   });
 
   it('returns null when only path is stored (no version)', async () => {
-    mockGetMany.mockResolvedValueOnce({
-      '@olix/model_path': '/docs/gemma-4.task',
-      '@olix/model_version': null,
-    });
+    mockMultiGet.mockResolvedValueOnce([
+      ['@olix/model_path', '/docs/gemma-4.task'],
+      ['@olix/model_version', null],
+    ]);
     const info = await ModelDownloader.getStoredModelInfo();
     expect(info).toBeNull();
   });
@@ -174,10 +177,10 @@ describe('ModelDownloader.getStoredModelInfo', () => {
 
 describe('ensureModel — cache hit', () => {
   it('returns cached path without downloading when file exists on disk', async () => {
-    mockGetMany.mockResolvedValueOnce({
-      '@olix/model_path': '/docs/gemma-4.task',
-      '@olix/model_version': '1.0.0',
-    });
+    mockMultiGet.mockResolvedValueOnce([
+      ['@olix/model_path', '/docs/gemma-4.task'],
+      ['@olix/model_version', '1.0.0'],
+    ]);
     RNFetchBlobMock.__setExists(true);
 
     const dl = new ModelDownloader(jest.fn());
@@ -190,10 +193,10 @@ describe('ensureModel — cache hit', () => {
   });
 
   it('re-downloads when cached path file is missing from disk', async () => {
-    mockGetMany.mockResolvedValueOnce({
-      '@olix/model_path': '/docs/gemma-4.task',
-      '@olix/model_version': '1.0.0',
-    });
+    mockMultiGet.mockResolvedValueOnce([
+      ['@olix/model_path', '/docs/gemma-4.task'],
+      ['@olix/model_version', '1.0.0'],
+    ]);
     // File does not exist on disk
     RNFetchBlobMock.__setExists(false);
 
@@ -229,8 +232,8 @@ describe('ensureModel — fresh download', () => {
     await resolveDownload('/docs/gemma-4.task');
     await promise;
 
-    expect(mockSetMany).toHaveBeenCalledWith(
-      expect.objectContaining({'@olix/model_path': '/docs/gemma-4.task'}),
+    expect(mockMultiSet).toHaveBeenCalledWith(
+      expect.arrayContaining([['@olix/model_path', '/docs/gemma-4.task']]),
     );
   });
 

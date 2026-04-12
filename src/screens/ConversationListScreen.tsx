@@ -3,6 +3,7 @@
  *
  * - Reloads on every focus so it stays current after returning from ChatScreen.
  * - "New chat" button in the header creates a conversation then navigates to it.
+ * - Settings gear in the header navigates to SettingsScreen.
  * - Long-press any row to delete with confirmation.
  * - Empty state with a CTA when there are no conversations.
  */
@@ -30,9 +31,11 @@ export function ConversationListScreen(): React.JSX.Element {
     }, []),
   );
 
-  // ── Header: New chat button ───────────────────────────────────────────────
+  // ── Header buttons ────────────────────────────────────────────────────────
   useLayoutEffect(() => {
     navigation.setOptions({
+      // eslint-disable-next-line react/no-unstable-nested-components
+      headerLeft: () => <SettingsButton onPress={() => navigation.navigate('Settings')} />,
       // eslint-disable-next-line react/no-unstable-nested-components
       headerRight: () => <NewChatButton onPress={handleNewChat} />,
     });
@@ -93,7 +96,15 @@ export function ConversationListScreen(): React.JSX.Element {
   );
 }
 
-// ─── Header button ────────────────────────────────────────────────────────────
+// ─── Header buttons ───────────────────────────────────────────────────────────
+
+function SettingsButton({onPress}: {onPress: () => void}): React.JSX.Element {
+  return (
+    <TouchableOpacity onPress={onPress} hitSlop={8}>
+      <Text style={styles.headerBtn}>{'⚙'}</Text>
+    </TouchableOpacity>
+  );
+}
 
 function NewChatButton({onPress}: {onPress: () => void}): React.JSX.Element {
   return (
