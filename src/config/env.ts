@@ -58,17 +58,22 @@ function resolveString(value: string | undefined, name: string, fallback?: strin
 
 export const ENV: AppEnv = resolveEnv();
 
+// OlixBuildConfigModule constants — always correct for Android (reads
+// com.olix.BuildConfig directly, bypassing react-native-config's broken
+// class lookup for non-prod flavors).
+const _bc = NativeModules.OlixBuildConfig as Record<string, string> | undefined;
+
 export const AppConfig = {
   env: ENV,
   isDev: ENV === 'dev',
   isQA: ENV === 'qa',
   isProd: ENV === 'prod',
-  displayName: resolveString(Config.APP_DISPLAY_NAME, 'APP_DISPLAY_NAME', 'Olix'),
-  bundleId: resolveString(Config.BUNDLE_ID, 'BUNDLE_ID', 'com.olix.dev'),
+  displayName: resolveString(_bc?.APP_DISPLAY_NAME ?? Config.APP_DISPLAY_NAME, 'APP_DISPLAY_NAME', 'Olix'),
+  bundleId: resolveString(_bc?.BUNDLE_ID ?? Config.BUNDLE_ID, 'BUNDLE_ID', 'com.olix.dev'),
   modelCdnUrl: resolveString(
-    Config.MODEL_CDN_URL,
+    _bc?.MODEL_CDN_URL ?? Config.MODEL_CDN_URL,
     'MODEL_CDN_URL',
-    'https://dev-cdn.example.com/models',
+    'https://huggingface.co/litert-community/gemma-4-E2B-it-litert-lm/resolve/main',
   ),
   sentryDsn: Config.SENTRY_DSN ?? '',
 } as const;

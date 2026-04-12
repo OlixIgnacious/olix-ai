@@ -22,6 +22,10 @@ class OlixBuildConfigModule(reactContext: ReactApplicationContext) :
 
     override fun getName(): String = "OlixBuildConfig"
 
-    override fun getConstants(): Map<String, Any> =
-        mapOf("APP_ENV" to BuildConfig.APP_ENV)
+    override fun getConstants(): Map<String, Any> = mapOf(
+        "APP_ENV"          to BuildConfig.APP_ENV,
+        "MODEL_CDN_URL"    to BuildConfig.MODEL_CDN_URL,
+        "APP_DISPLAY_NAME" to BuildConfig.APP_DISPLAY_NAME,
+        "BUNDLE_ID"        to BuildConfig.BUNDLE_ID,
+    )
 }
