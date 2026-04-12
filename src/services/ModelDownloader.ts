@@ -41,8 +41,10 @@ export type ModelInfo = {
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-// Gemma 4 E2B instruction-tuned, LiteRT format (2.58 GB).
+// Gemma 4 E2B instruction-tuned, LiteRT format (~2.58 GB).
+// Public mirror — no HuggingFace account required.
 // MediaPipe LLM Inference (tasks-genai) loads .litertlm files directly via setModelPath.
+const MODEL_URL = 'https://huggingface.co/litert-community/gemma-4-E2B-it-litert-lm/resolve/main/gemma-4-E2B-it.litertlm';
 const MODEL_FILENAME = 'gemma-4-E2B-it.litertlm';
 const MODEL_VERSION = 'gemma-4-e2b-it';
 const STORAGE_KEY_MODEL_PATH = '@olix/model_path';
@@ -88,9 +90,10 @@ export class ModelDownloader {
   // ── Cached model info ───────────────────────────────────────────────────────
 
   static async getStoredModelInfo(): Promise<ModelInfo | null> {
-    const pairs = await AsyncStorage.multiGet([STORAGE_KEY_MODEL_PATH, STORAGE_KEY_MODEL_VERSION]);
-    const pathVal = pairs.find(([k]) => k === STORAGE_KEY_MODEL_PATH)?.[1];
-    const versionVal = pairs.find(([k]) => k === STORAGE_KEY_MODEL_VERSION)?.[1];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const pairs = await (AsyncStorage as any).multiGet([STORAGE_KEY_MODEL_PATH, STORAGE_KEY_MODEL_VERSION]) as [string, string | null][];
+    const pathVal = pairs.find(([k]: [string, string | null]) => k === STORAGE_KEY_MODEL_PATH)?.[1];
+    const versionVal = pairs.find(([k]: [string, string | null]) => k === STORAGE_KEY_MODEL_VERSION)?.[1];
     if (pathVal && versionVal) {
       return {path: pathVal, version: versionVal};
     }
@@ -98,7 +101,8 @@ export class ModelDownloader {
   }
 
   static async clearStoredModelInfo(): Promise<void> {
-    await AsyncStorage.multiRemove([STORAGE_KEY_MODEL_PATH, STORAGE_KEY_MODEL_VERSION]);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (AsyncStorage as any).multiRemove([STORAGE_KEY_MODEL_PATH, STORAGE_KEY_MODEL_VERSION]);
   }
 
   // ── Private ─────────────────────────────────────────────────────────────────
@@ -113,13 +117,12 @@ export class ModelDownloader {
 
     const destDir = RNFetchBlob.fs.dirs.DocumentDir;
     const destPath = `${destDir}/${MODEL_FILENAME}`;
-    const modelUrl = `${AppConfig.modelCdnUrl}/${MODEL_FILENAME}`;
+    const modelUrl = MODEL_URL;
 
     logger.debug('ModelDownloader: starting download', {url: modelUrl, dest: destPath});
 
-    // Preflight HEAD request — catches auth errors before the large download starts.
-    // HuggingFace returns 401 for gated models without a token, or 302 → login page
-    // (which rn-fetch-blob follows and ultimately gets a small HTML body, not a model).
+    // Preflight (GET Range: bytes=0-0) — catches auth/URL errors before the large
+    // download starts instead of letting rn-fetch-blob throw "Download interrupted."
     await this.preflight(modelUrl);
 
     // Check if a partial file exists for resume
@@ -178,7 +181,8 @@ export class ModelDownloader {
           }
 
           const version = await this.fetchVersion();
-          await AsyncStorage.multiSet([
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          await (AsyncStorage as any).multiSet([
             [STORAGE_KEY_MODEL_PATH, filePath],
             [STORAGE_KEY_MODEL_VERSION, version],
           ]);
@@ -208,14 +212,18 @@ export class ModelDownloader {
   }
 
   /**
-   * HEAD request to the model URL before the large download begins.
+   * Preflight GET (Range: bytes=0-0) before the large download begins.
+   * rn-fetch-blob doesn't support HEAD, so we fetch exactly 1 byte.
    * Surfaces auth errors (401/403) and bad URLs immediately with a clear message
    * instead of letting rn-fetch-blob throw a cryptic "Download interrupted."
    */
   private async preflight(modelUrl: string): Promise<void> {
     let status: number;
     try {
-      const res = await RNFetchBlob.fetch('HEAD', modelUrl, {'User-Agent': 'OlixApp/1.0'});
+      const res = await RNFetchBlob.fetch('GET', modelUrl, {
+        'User-Agent': 'OlixApp/1.0',
+        Range: 'bytes=0-0',
+      });
       status = res.respInfo.status;
     } catch (err) {
       // Network-level failure — pass through, the main download will fail with its own message
@@ -237,7 +245,7 @@ export class ModelDownloader {
     if (status >= 400) {
       throw new Error(`Model URL returned HTTP ${status}. Check your internet connection and retry.`);
     }
-    // 200 or 302 (redirect) — proceed
+    // 200, 206 (partial content), or 302 (redirect followed by rn-fetch-blob) — proceed
   }
 
   private async verifyChecksum(filePath: string, modelUrl: string): Promise<void> {
