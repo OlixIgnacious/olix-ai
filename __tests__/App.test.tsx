@@ -55,6 +55,14 @@ jest.mock('../src/native/NativeOlixLLM', () => ({
   LLM_EVENTS: {TOKEN: 'OlixLLM_token', DONE: 'OlixLLM_done', ERROR: 'OlixLLM_error'},
 }));
 
+jest.mock('@op-engineering/op-sqlite', () => ({
+  open: jest.fn(() => ({
+    execute: jest.fn(() => ({rows: {_array: []}})),
+    executeSync: jest.fn(() => ({rows: {_array: []}})),
+    close: jest.fn(),
+  })),
+}));
+
 jest.mock('rn-fetch-blob', () => ({
   __esModule: true,
   default: {

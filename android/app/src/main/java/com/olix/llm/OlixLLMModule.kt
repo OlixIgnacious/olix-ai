@@ -49,9 +49,7 @@ class OlixLLMModule(private val reactContext: ReactApplicationContext) :
                 val options = LlmInference.LlmInferenceOptions.builder()
                     .setModelPath(path)
                     .setMaxTokens(1024)
-                    .setTopK(40)
-                    .setTemperature(0.8f)
-                    .setRandomSeed(102)
+                    .setMaxTopK(40)
                     .build()
 
                 inference = LlmInference.createFromOptions(reactContext, options)

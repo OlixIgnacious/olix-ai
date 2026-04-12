@@ -18,6 +18,7 @@ module.exports = {
       '|react-native-safe-area-context' +
       '|rn-fetch-blob' +
       '|uuid' +
+      '|@op-engineering/op-sqlite' +
       ')/)',
   ],
 
