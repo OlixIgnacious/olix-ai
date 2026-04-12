@@ -117,13 +117,17 @@ export class ModelDownloader {
 
     const destDir = RNFetchBlob.fs.dirs.DocumentDir;
     const destPath = `${destDir}/${MODEL_FILENAME}`;
-    const modelUrl = MODEL_URL;
+
+    // Resolve HuggingFace's XET redirect chain before downloading.
+    // HuggingFace returns 302 → cas-bridge.xethub.hf.co (AWS-signed URL).
+    // rn-fetch-blob's file-download mode fails to stream across this cross-domain
+    // redirect, producing "Download interrupted." rn-fetch-blob receives only the
+    // 302 body (a plain-text redirect notice) and treats it as the file.
+    // Solution: use the native fetch() API (which follows redirects correctly) to
+    // resolve the final CDN URL, then hand that directly to rn-fetch-blob.
+    const modelUrl = await this.resolveRedirectUrl(MODEL_URL);
 
     logger.debug('ModelDownloader: starting download', {url: modelUrl, dest: destPath});
-
-    // Preflight (GET Range: bytes=0-0) — catches auth/URL errors before the large
-    // download starts instead of letting rn-fetch-blob throw "Download interrupted."
-    await this.preflight(modelUrl);
 
     // Check if a partial file exists for resume
     const partialExists = await RNFetchBlob.fs.exists(destPath);
@@ -212,26 +216,39 @@ export class ModelDownloader {
   }
 
   /**
-   * Preflight GET (Range: bytes=0-0) before the large download begins.
-   * rn-fetch-blob doesn't support HEAD, so we fetch exactly 1 byte.
-   * Surfaces auth errors (401/403) and bad URLs immediately with a clear message
-   * instead of letting rn-fetch-blob throw a cryptic "Download interrupted."
+   * Follow HuggingFace's redirect chain using the native fetch() API and return
+   * the final resolved URL (e.g. the AWS-signed cas-bridge.xethub.hf.co URL).
+   *
+   * Why: HuggingFace uses XET storage and returns a 302 to a cross-domain
+   * signed CDN URL. rn-fetch-blob's file-download streaming fails across this
+   * redirect — it receives the 302 text body instead of the model bytes and
+   * throws "Download interrupted." The native fetch() handles redirects correctly
+   * and exposes the final response.url, which we then pass directly to rn-fetch-blob
+   * so it makes one clean GET request with no redirect required.
+   *
+   * Side-effect: surfaces auth (401/403) and bad-URL (404) errors early with a
+   * human-readable message rather than a cryptic rn-fetch-blob native error.
    */
-  private async preflight(modelUrl: string): Promise<void> {
-    let status: number;
+  private async resolveRedirectUrl(url: string): Promise<string> {
+    let response: Response;
     try {
-      const res = await RNFetchBlob.fetch('GET', modelUrl, {
-        'User-Agent': 'OlixApp/1.0',
-        Range: 'bytes=0-0',
-      });
-      status = res.respInfo.status;
-    } catch (err) {
-      // Network-level failure — pass through, the main download will fail with its own message
-      logger.warn('ModelDownloader: preflight failed (network)', err);
-      return;
+      // fetch() follows all redirects and exposes the final URL via response.url.
+      // We request only the first byte (Range: bytes=0-0) so the body is trivially
+      // small — we discard it immediately. The important thing is response.url which
+      // is the fully-resolved, AWS-signed cas-bridge.xethub.hf.co URL that rn-fetch-blob
+      // can download directly without needing to follow any redirects itself.
+      response = await fetch(url, {headers: {Range: 'bytes=0-0'}});
+      // Consume and discard the 1-byte body so the connection is released.
+      await response.text().catch(() => {});
+    } catch (err: unknown) {
+      logger.warn('ModelDownloader: redirect resolution failed, using original URL', err);
+      return url;
     }
 
-    logger.debug('ModelDownloader: preflight status', {status, url: modelUrl});
+    const {status} = response;
+    const finalUrl = response.url || url;
+
+    logger.debug('ModelDownloader: resolved URL', {status, original: url, resolved: finalUrl});
 
     if (status === 401 || status === 403) {
       throw new Error(
@@ -240,12 +257,15 @@ export class ModelDownloader {
       );
     }
     if (status === 404) {
-      throw new Error(`Model not found at the configured URL (HTTP 404). Check MODEL_CDN_URL.`);
+      throw new Error('Model not found at the download URL (HTTP 404). Please try again later.');
     }
     if (status >= 400) {
-      throw new Error(`Model URL returned HTTP ${status}. Check your internet connection and retry.`);
+      throw new Error(
+        `Model server returned HTTP ${status}. Check your internet connection and retry.`,
+      );
     }
-    // 200, 206 (partial content), or 302 (redirect followed by rn-fetch-blob) — proceed
+
+    return finalUrl;
   }
 
   private async verifyChecksum(filePath: string, modelUrl: string): Promise<void> {
