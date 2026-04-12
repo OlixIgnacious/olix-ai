@@ -7,7 +7,7 @@ import com.facebook.react.uimanager.ViewManager
 
 class OlixLLMPackage : ReactPackage {
     override fun createNativeModules(context: ReactApplicationContext): List<NativeModule> =
-        listOf(OlixLLMModule(context))
+        listOf(OlixLLMModule(context), OlixBuildConfigModule(context))
 
     override fun createViewManagers(context: ReactApplicationContext): List<ViewManager<*, *>> =
         emptyList()
