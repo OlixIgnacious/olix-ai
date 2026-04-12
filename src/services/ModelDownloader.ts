@@ -117,6 +117,11 @@ export class ModelDownloader {
 
     logger.debug('ModelDownloader: starting download', {url: modelUrl, dest: destPath});
 
+    // Preflight HEAD request — catches auth errors before the large download starts.
+    // HuggingFace returns 401 for gated models without a token, or 302 → login page
+    // (which rn-fetch-blob follows and ultimately gets a small HTML body, not a model).
+    await this.preflight(modelUrl);
+
     // Check if a partial file exists for resume
     const partialExists = await RNFetchBlob.fs.exists(destPath);
     let resumeOffset = 0;
@@ -200,6 +205,39 @@ export class ModelDownloader {
       etaSeconds = Math.round((msPerPercent * (100 - percent)) / 1000);
     }
     return {received, total, percent, etaSeconds};
+  }
+
+  /**
+   * HEAD request to the model URL before the large download begins.
+   * Surfaces auth errors (401/403) and bad URLs immediately with a clear message
+   * instead of letting rn-fetch-blob throw a cryptic "Download interrupted."
+   */
+  private async preflight(modelUrl: string): Promise<void> {
+    let status: number;
+    try {
+      const res = await RNFetchBlob.fetch('HEAD', modelUrl, {'User-Agent': 'OlixApp/1.0'});
+      status = res.respInfo.status;
+    } catch (err) {
+      // Network-level failure — pass through, the main download will fail with its own message
+      logger.warn('ModelDownloader: preflight failed (network)', err);
+      return;
+    }
+
+    logger.debug('ModelDownloader: preflight status', {status, url: modelUrl});
+
+    if (status === 401 || status === 403) {
+      throw new Error(
+        'Model download requires a HuggingFace account with the Gemma license accepted. ' +
+          'Visit huggingface.co/google/gemma and accept the license, then retry.',
+      );
+    }
+    if (status === 404) {
+      throw new Error(`Model not found at the configured URL (HTTP 404). Check MODEL_CDN_URL.`);
+    }
+    if (status >= 400) {
+      throw new Error(`Model URL returned HTTP ${status}. Check your internet connection and retry.`);
+    }
+    // 200 or 302 (redirect) — proceed
   }
 
   private async verifyChecksum(filePath: string, modelUrl: string): Promise<void> {
