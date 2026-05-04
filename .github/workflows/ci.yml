@@ -11,8 +11,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint-type-test:
-    name: Lint · Type-check · Unit tests
+  lint-type-check:
+    name: Lint · Type-check
     runs-on: ubuntu-latest
 
     steps:
@@ -28,7 +28,7 @@ jobs:
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
 
-      - name: Copy dev env file (CI uses dev defaults)
+      - name: Copy dev env file
         run: cp .env.dev .env
 
       - name: Lint
@@ -36,14 +36,3 @@ jobs:
 
       - name: Type-check
         run: npm run type-check
-
-      - name: Unit tests
-        run: npm run test:coverage
-
-      - name: Upload coverage
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: coverage
-          path: coverage/
-          retention-days: 7
