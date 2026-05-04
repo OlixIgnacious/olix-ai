@@ -1,6 +1,25 @@
 import React from 'react';
 import Svg, {Circle, Line, Path, Rect} from 'react-native-svg';
 
+// Boxi logo mark — isometric box, black fill with white top face + shelf lines.
+export function BoxiIcon({size = 32}: {size?: number}): React.JSX.Element {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 100 100">
+      {/* Full cube silhouette */}
+      <Path d="M50 8 L91 31 L91 72 L50 92 L9 72 L9 31 Z" fill="#0A0A0A" />
+      {/* Top face — white negative space */}
+      <Path d="M50 8 L91 31 L50 52 L9 31 Z" fill="#FFFFFF" />
+      {/* Three dots on top face */}
+      <Circle cx="37" cy="34" r="4.5" fill="#0A0A0A" />
+      <Circle cx="50" cy="40" r="4.5" fill="#0A0A0A" />
+      <Circle cx="63" cy="34" r="4.5" fill="#0A0A0A" />
+      {/* Shelf dividers on right face — two white horizontal bars */}
+      <Path d="M51 65 L89 43 L89 50 L51 72 Z" fill="#FFFFFF" />
+      <Path d="M51 76 L89 54 L89 61 L51 83 Z" fill="#FFFFFF" />
+    </Svg>
+  );
+}
+
 type IconProps = {color: string; size?: number};
 
 export function HomeIcon({color, size = 22}: IconProps): React.JSX.Element {

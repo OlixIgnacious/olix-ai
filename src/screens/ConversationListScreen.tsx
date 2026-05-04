@@ -70,9 +70,9 @@ export function ConversationListScreen(): React.JSX.Element {
   if (conversations.length === 0) {
     return (
       <View style={styles.empty}>
-        <GradientBackground gradientId="chatListEmptyBg" startColor="#F8F6FF" endColor="#DDD6FE" />
+        <GradientBackground gradientId="chatListEmptyBg" startColor="#FFFFFF" endColor="#F5F5F5" />
         <Text style={styles.emptyTitle}>{'No conversations yet'}</Text>
-        <Text style={styles.emptySubtitle}>{'Start chatting with akhr'}</Text>
+        <Text style={styles.emptySubtitle}>{'Start chatting with Boxi'}</Text>
         <TouchableOpacity style={styles.emptyButton} onPress={handleNewChat}>
           <Text style={styles.emptyButtonText}>{'New chat'}</Text>
         </TouchableOpacity>
@@ -82,7 +82,7 @@ export function ConversationListScreen(): React.JSX.Element {
 
   return (
     <View style={styles.container}>
-      <GradientBackground gradientId="chatListBg" startColor="#F8F6FF" endColor="#DDD6FE" />
+      <GradientBackground gradientId="chatListBg" startColor="#FFFFFF" endColor="#F5F5F5" />
       <FlatList
         data={conversations}
         keyExtractor={item => item.id}

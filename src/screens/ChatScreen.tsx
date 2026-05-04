@@ -230,7 +230,7 @@ export function ChatScreen({route, navigation}: Props): React.JSX.Element {
     }
     const granted = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-      {title: 'Microphone', message: 'akhr needs microphone access to hear you.', buttonPositive: 'Allow'},
+      {title: 'Microphone', message: 'Boxi needs microphone access to hear you.', buttonPositive: 'Allow'},
     );
     if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
       Alert.alert('Permission required', 'Microphone access is needed for voice input.');
@@ -345,7 +345,12 @@ export function ChatScreen({route, navigation}: Props): React.JSX.Element {
         db.conversations.touch(conversationId);
         db.conversations.updatePreview(conversationId, accumulatedRef.current.slice(0, 80));
 
-        // AI-generated title after first exchange (isGenerating still true — no race)
+        // Clear the streaming bubble now — the saved message is already in the list
+        setStreamingContent('');
+        setIsGenerating(false);
+        isGeneratingRef.current = false;
+
+        // AI-generated title — runs after streaming UI is cleared to avoid duplicate bubble
         if (history.length === 1) {
           const aiTitle = await generateConversationTitle(displayText, accumulatedRef.current);
           db.conversations.updateTitle(conversationId, aiTitle);
@@ -412,7 +417,7 @@ export function ChatScreen({route, navigation}: Props): React.JSX.Element {
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 70}>
-      <GradientBackground gradientId="chatBg" startColor="#F8F6FF" endColor="#DDD6FE" />
+      <GradientBackground gradientId="chatBg" startColor="#FFFFFF" endColor="#F5F5F5" />
 
       {showThermalWarning && (
         <ThermalWarningBanner onDismiss={() => setShowThermalWarning(false)} />
@@ -474,7 +479,7 @@ export function ChatScreen({route, navigation}: Props): React.JSX.Element {
           style={styles.input}
           value={input}
           onChangeText={setInput}
-          placeholder={'Message akhr\u2026'}
+          placeholder={'Message Boxi\u2026'}
           placeholderTextColor={colors.textSecondary}
           multiline
           editable={!isGenerating}

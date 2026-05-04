@@ -1,6 +1,7 @@
 import React from 'react';
 import {ActivityIndicator, StyleSheet, Text, View} from 'react-native';
 import Markdown from 'react-native-markdown-display';
+import {BoxiIcon} from '@/components/TabIcons';
 import {colors} from '@/theme/colors';
 
 type Props = {
@@ -44,7 +45,7 @@ export function MessageBubble({role, content, isStreaming = false}: Props): Reac
     <View style={[styles.row, isUser ? styles.rowUser : styles.rowAssistant]}>
       {!isUser && (
         <View style={styles.avatar}>
-          <Text style={styles.avatarText}>{'A'}</Text>
+          <BoxiIcon size={22} />
         </View>
       )}
       <View style={[styles.bubble, isUser ? styles.bubbleUser : styles.bubbleAssistant]}>
@@ -80,19 +81,14 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   avatar: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: 32,
+    height: 32,
+    borderRadius: 8,
     backgroundColor: colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0,
     marginBottom: 2,
-  },
-  avatarText: {
-    color: colors.textSecondary,
-    fontSize: 13,
-    fontWeight: '600',
   },
   bubble: {
     borderRadius: 20,

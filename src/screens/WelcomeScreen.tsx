@@ -18,15 +18,14 @@ export function WelcomeScreen({navigation}: Props): React.JSX.Element {
 
   return (
     <View style={styles.screen}>
-      <GradientBackground gradientId="welcomeBg" startColor="#F0EEFF" endColor="#E4DEFF" />
+      <GradientBackground gradientId="welcomeBg" startColor="#FFFFFF" endColor="#F5F5F5" />
 
       <View style={styles.center}>
         <Image
-          source={require('../assets/logo.png')}
-          style={styles.logo}
+          source={require('../assets/logo-lock-up.png')}
+          style={styles.lockup}
           resizeMode="contain"
         />
-        <Text style={styles.wordmark}>{'akhr'}</Text>
         <Text style={styles.tagline}>{'Your private mind, on local silicon.'}</Text>
       </View>
 
@@ -56,17 +55,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  logo: {
-    width: 160,
-    height: 160,
-    marginBottom: 32,
-  },
-  wordmark: {
-    fontSize: 52,
-    fontWeight: '800',
-    color: colors.navy,
-    letterSpacing: -1,
-    marginBottom: 12,
+  lockup: {
+    width: 260,
+    height: 130,
+    marginBottom: 24,
   },
   tagline: {
     fontSize: 16,

@@ -11,7 +11,7 @@ export function BlockedScreen({route}: Props): React.JSX.Element {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Device not supported</Text>
-      <Text style={styles.subtitle}>{'This device cannot run akhr due to the following:'}</Text>
+      <Text style={styles.subtitle}>{'This device cannot run Boxi due to the following:'}</Text>
       {reasons.map((reason, i) => (
         <Text key={i} style={styles.reason}>
           {'• '}

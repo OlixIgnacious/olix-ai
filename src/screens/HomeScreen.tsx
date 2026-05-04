@@ -1,6 +1,7 @@
 import React, {useCallback, useState} from 'react';
 import {
   Alert,
+  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -19,14 +20,6 @@ import {SearchIcon, NewChatIcon} from '@/components/TabIcons';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
-function greeting(): string {
-  const h = new Date().getHours();
-  if (h < 5) return 'Good night';
-  if (h < 12) return 'Good morning';
-  if (h < 17) return 'Good afternoon';
-  if (h < 22) return 'Good evening';
-  return 'Good night';
-}
 
 function formatDate(ms: number): string {
   const d = new Date(ms);
@@ -76,13 +69,17 @@ export function HomeScreen(): React.JSX.Element {
 
   return (
     <View style={styles.screen}>
-      <GradientBackground gradientId="homeBg" startColor="#F8F6FF" endColor="#DDD6FE" />
+      <GradientBackground gradientId="homeBg" startColor="#FFFFFF" endColor="#F5F5F5" />
       <ScrollView contentContainerStyle={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <View>
-            <Text style={styles.greetingText}>{greeting()}</Text>
-            <Text style={styles.appName}>{'akhr'}</Text>
+          <View style={styles.brandRow}>
+            <Image
+              source={require('../assets/logo.png')}
+              style={styles.brandIcon}
+              resizeMode="contain"
+            />
+            <Text style={styles.brandName}>{'Boxi'}</Text>
           </View>
           <TouchableOpacity hitSlop={8} onPress={() => navigation.navigate('Settings')}>
             <Text style={styles.gearIcon}>{'⚙'}</Text>
@@ -150,14 +147,19 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'space-between',
   },
-  greetingText: {
-    color: colors.textSecondary,
-    fontSize: 13,
-    marginBottom: 2,
+  brandRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 2,
   },
-  appName: {
-    color: colors.navy,
-    fontSize: 28,
+  brandIcon: {
+    width: 32,
+    height: 32,
+  },
+  brandName: {
+    color: colors.text,
+    fontSize: 26,
     fontWeight: '700',
     letterSpacing: -0.5,
   },

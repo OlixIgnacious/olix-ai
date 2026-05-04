@@ -152,7 +152,7 @@ export function VoiceScreen(): React.JSX.Element {
 
     const permission = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-      {title: 'Microphone access', message: 'akhr needs the microphone to hear you.', buttonPositive: 'Allow'},
+      {title: 'Microphone access', message: 'Boxi needs the microphone to hear you.', buttonPositive: 'Allow'},
     );
     if (permission !== PermissionsAndroid.RESULTS.GRANTED) {
       Alert.alert('Permission needed', 'Please allow microphone access in Settings to use voice mode.');
@@ -176,29 +176,18 @@ export function VoiceScreen(): React.JSX.Element {
       const prompt = formatGemmaPrompt([{role: 'user', content: text}], true);
       let accumulated = '';
 
-      // ── Buffer & flush ──────────────────────────────────────────────────────
-      // Collect tokens into a buffer and flush to Kokoro on sentence boundaries.
-      // While one chunk is being spoken, generation continues filling the next.
+      // ── Fire-and-collect flush ──────────────────────────────────────────────
+      // All chunks are sent to native immediately as they flush — the native
+      // module queues and pre-synthesises them in parallel with playback.
+      // We collect the promises and await them all at the end.
       let buffer = '';
-      const pendingChunks: string[] = [];
-      const draining = {value: false};
-
-      async function drainSpeaker(): Promise<void> {
-        if (draining.value) return;
-        draining.value = true;
-        while (pendingChunks.length > 0 && isActiveRef.current) {
-          setVoiceState('speaking');
-          await speak(pendingChunks.shift()!);
-        }
-        draining.value = false;
-      }
+      const speakPromises: Promise<void>[] = [];
 
       function flushBuffer(): void {
         const chunk = buffer.trim();
         buffer = '';
         if (chunk && isActiveRef.current) {
-          pendingChunks.push(chunk);
-          void drainSpeaker();
+          speakPromises.push(speak(chunk));
         }
       }
 
@@ -207,16 +196,17 @@ export function VoiceScreen(): React.JSX.Element {
         accumulated += token;
         buffer += token;
         setResponse(accumulated);
-        if (/[.!?,]/.test(token)) flushBuffer();
+        const sentenceEnd = /[.!?](\s|$)/.test(token) || buffer.endsWith('\n\n');
+        const longEnough = buffer.length >= 50 && /\s/.test(token);
+        if (sentenceEnd || longEnough) flushBuffer();
       });
 
-      // Flush any trailing text that didn't end with punctuation
       flushBuffer();
 
-      // Wait for the speaker queue to empty (30 s hard timeout prevents permanent lock)
-      const deadline = Date.now() + 30_000;
-      while ((pendingChunks.length > 0 || draining.value) && isActiveRef.current && Date.now() < deadline) {
-        await new Promise<void>(r => setTimeout(r, 100));
+      if (speakPromises.length > 0 && isActiveRef.current) {
+        setVoiceState('speaking');
+        const timeout = new Promise<void>(r => setTimeout(r, 30_000));
+        await Promise.race([Promise.all(speakPromises), timeout]);
       }
     } catch {
       setVoiceState('idle');
@@ -229,9 +219,9 @@ export function VoiceScreen(): React.JSX.Element {
 
   return (
     <View style={styles.screen}>
-      <GradientBackground gradientId="voiceBg" startColor="#F8F6FF" endColor="#DDD6FE" />
+      <GradientBackground gradientId="voiceBg" startColor="#FFFFFF" endColor="#F5F5F5" />
       {/* Header */}
-      <Text style={styles.header}>{'Speaking to akhr'}</Text>
+      <Text style={styles.header}>{'Speaking to Boxi'}</Text>
 
       {/* State label */}
       <Text style={styles.stateLabel}>{STATE_LABEL[voiceState]}</Text>

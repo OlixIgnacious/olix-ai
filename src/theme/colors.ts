@@ -1,27 +1,32 @@
 export const colors = {
-  background:          '#FAF8F5',
-  surface:             '#F0EDE8',
-  border:              '#E5E0D8',
-  text:                '#1C1B1A',
-  textSecondary:       '#9A9590',
-  userBubble:          '#1C1B1A',
+  // ── Base ────────────────────────────────────────────────────────────────────
+  background:          '#FFFFFF',
+  surface:             '#F5F5F5',
+  border:              '#E8E8E8',
+  text:                '#0A0A0A',
+  textSecondary:       '#737373',
+  // ── Bubbles ─────────────────────────────────────────────────────────────────
+  userBubble:          '#0A0A0A',
   userBubbleText:      '#FFFFFF',
-  assistantBubble:     '#ECEAE5',
-  assistantBubbleText: '#1C1B1A',
-  accent:              '#1C1B1A',
-  accentDisabled:      '#C8C4BC',
+  assistantBubble:     '#F5F5F5',
+  assistantBubbleText: '#0A0A0A',
+  // ── Actions ─────────────────────────────────────────────────────────────────
+  accent:              '#0A0A0A',
+  accentDisabled:      '#CCCCCC',
   danger:              '#C0392B',
+  // ── Warnings ────────────────────────────────────────────────────────────────
   warning:             '#FFF3CD',
   warningBorder:       '#FFE08A',
   warningText:         '#7A5C00',
-  // Lavender / purple brand tokens
-  lavender:            '#F5F3FF',
-  lavenderSurface:     '#EDE9FE',
-  purple:              '#7C3AED',
-  purpleLight:         '#8B5CF6',
-  purpleDim:           '#A78BFA',
-  navy:                '#1E1B4B',
-  waveA:               '#7C3AED',
-  waveB:               '#EC4899',
-  waveC:               '#06B6D4',
+  // ── Screen backgrounds (formerly lavender/purple) ────────────────────────────
+  lavender:            '#FFFFFF',
+  lavenderSurface:     '#F5F5F5',
+  purple:              '#0A0A0A',
+  purpleLight:         '#333333',
+  purpleDim:           '#737373',
+  navy:                '#0A0A0A',
+  // ── Voice wave colours ───────────────────────────────────────────────────────
+  waveA:               '#0A0A0A',
+  waveB:               '#444444',
+  waveC:               '#AAAAAA',
 };
