@@ -11,6 +11,7 @@ Boxi is a fully offline AI assistant for Android. Powered by Gemma 4, running en
 
 <br />
 
+[![Download APK](https://img.shields.io/badge/Download_APK-v1.0.0-000000?style=for-the-badge&logo=android&logoColor=white)](https://github.com/OlixIgnacious/boxi-ai/releases/latest)
 [![Platform](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://play.google.com/store)
 [![React Native](https://img.shields.io/badge/React_Native_0.85-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactnative.dev)
 [![Gemma 4](https://img.shields.io/badge/Gemma_4-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev/gemma)
