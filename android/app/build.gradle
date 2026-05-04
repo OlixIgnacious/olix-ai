@@ -105,28 +105,28 @@ android {
         dev {
             dimension "environment"
             applicationId "com.olix.dev"
-            resValue "string", "app_name", "akhr Dev"
+            resValue "string", "app_name", "boxi Dev"
             buildConfigField "String", "APP_ENV", '"dev"'
             buildConfigField "String", "MODEL_CDN_URL", '"https://huggingface.co/litert-community/gemma-4-E4B-it-litert-lm/resolve/main"'
-            buildConfigField "String", "APP_DISPLAY_NAME", '"akhr Dev"'
+            buildConfigField "String", "APP_DISPLAY_NAME", '"boxi Dev"'
             buildConfigField "String", "BUNDLE_ID", '"com.olix.dev"'
         }
         qa {
             dimension "environment"
             applicationId "com.olix.qa"
-            resValue "string", "app_name", "akhr QA"
+            resValue "string", "app_name", "boxi QA"
             buildConfigField "String", "APP_ENV", '"qa"'
             buildConfigField "String", "MODEL_CDN_URL", '"https://huggingface.co/litert-community/gemma-4-E4B-it-litert-lm/resolve/main"'
-            buildConfigField "String", "APP_DISPLAY_NAME", '"akhr QA"'
+            buildConfigField "String", "APP_DISPLAY_NAME", '"boxi QA"'
             buildConfigField "String", "BUNDLE_ID", '"com.olix.qa"'
         }
         prod {
             dimension "environment"
             applicationId "com.olix"
-            resValue "string", "app_name", "akhr"
+            resValue "string", "app_name", "boxi"
             buildConfigField "String", "APP_ENV", '"prod"'
             buildConfigField "String", "MODEL_CDN_URL", '"https://huggingface.co/litert-community/gemma-4-E4B-it-litert-lm/resolve/main"'
-            buildConfigField "String", "APP_DISPLAY_NAME", '"akhr"'
+            buildConfigField "String", "APP_DISPLAY_NAME", '"boxi"'
             buildConfigField "String", "BUNDLE_ID", '"com.olix"'
         }
     }

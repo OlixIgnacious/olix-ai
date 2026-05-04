@@ -22,7 +22,7 @@ import type {RootStackParamList} from '@/navigation/types';
 import {ModelDownloader} from '@/services/ModelDownloader';
 import type {DownloadProgress} from '@/services/ModelDownloader';
 import {getStorageWarning} from '@/services/compatibility';
-import {loadModel} from '@/native';
+import {loadModel, generateStream} from '@/native';
 import {downloadFile, extractTarBz2, getFilesDir} from '@/native/NativeOlixDownload';
 import {initializeTTS} from '@/native/NativeOlixTTS';
 import {logger} from '@/utils/logger';
@@ -93,6 +93,9 @@ export function DownloadScreen({navigation}: Props): React.JSX.Element {
       setPhase({kind: 'error', message});
       return;
     }
+
+    // Pre-warm XNNPACK so the first real query doesn't stall
+    generateStream('<start_of_turn>user\nhi<end_of_turn>\n<start_of_turn>model\n', () => {}).catch(() => {});
 
     // 3. Download + initialise Kokoro voice model (skip if already done)
     const kokoroReady = await AsyncStorage.getItem(KOKORO_KEY);
