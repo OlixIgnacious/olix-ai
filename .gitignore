@@ -57,6 +57,10 @@ jest-config/
 *.tmp
 *.temp
 
+# ─── iOS (not supported — Android only) ───────────────────────────────────────
+ios/
+vendor/
+
 # ─── Claude Code ──────────────────────────────────────────────────────────────
 .claude/
 .prompt.md
