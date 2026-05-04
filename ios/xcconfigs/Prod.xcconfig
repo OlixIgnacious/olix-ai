@@ -1,4 +1,0 @@
-// Prod environment — bundle com.olix
-PRODUCT_BUNDLE_IDENTIFIER = com.olix
-DISPLAY_NAME = Olix
-APP_ENV = prod

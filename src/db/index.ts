@@ -5,6 +5,9 @@
  *   import {db} from '@/db';
  *   const conversations = db.conversations.findAll();
  *
+ * Call initDb() once at app startup (before any screen renders) and await it.
+ * The db proxy will throw if accessed before initDb() resolves.
+ *
  * Test files import the repository classes and schema directly, injecting
  * their own DBHandle — they never touch this file.
  */
@@ -13,6 +16,7 @@ import {open} from '@op-engineering/op-sqlite';
 import {runMigrations} from './schema';
 import {ConversationRepository} from './ConversationRepository';
 import {MessageRepository} from './MessageRepository';
+import {getOrCreateDbKey} from './dbKey';
 import type {DBHandle} from './types';
 
 // ─── Public type + value re-exports ──────────────────────────────────────────
@@ -32,25 +36,58 @@ type DB = {
 let _db: DB | null = null;
 
 /**
- * Open (or return the already-open) production SQLite database, running
- * schema migrations on first call.
+ * Async initialiser — must be awaited before any db access.
+ * Safe to call multiple times; subsequent calls are no-ops.
  *
- * The op-sqlite connection satisfies DBHandle structurally — its execute()
- * return type is a superset of ours.
+ * On first install the DB is created encrypted. On upgrade from an older
+ * unencrypted build, the old DB is deleted and a fresh encrypted one is
+ * created (existing conversations are lost, but security is established).
  */
-export function getDb(): DB {
+export async function initDb(): Promise<void> {
+  if (_db) {
+    return;
+  }
+
+  const key = await getOrCreateDbKey();
+
+  let raw: ReturnType<typeof open>;
+  try {
+    raw = open({name: 'olix.db', encryptionKey: key});
+    raw.executeSync('SELECT 1');
+  } catch {
+    // Pre-existing unencrypted DB — delete it and start fresh encrypted.
+    try {
+      const old = open({name: 'olix.db'});
+      old.delete();
+    } catch {
+      // Already gone or couldn't open — safe to ignore.
+    }
+    raw = open({name: 'olix.db', encryptionKey: key});
+  }
+
+  const conn: DBHandle = {
+    execute(sql: string, args?: import('./types').SQLArg[]) {
+      return raw.executeSync(sql, args as Parameters<typeof raw.executeSync>[1]);
+    },
+  };
+
+  runMigrations(conn);
+  const conversations = new ConversationRepository(conn);
+  conversations.migrateAddPreview();
+  _db = {
+    conversations,
+    messages: new MessageRepository(conn),
+  };
+}
+
+function getDb(): DB {
   if (!_db) {
-    const conn = open({name: 'olix.db'}) as unknown as DBHandle;
-    runMigrations(conn);
-    _db = {
-      conversations: new ConversationRepository(conn),
-      messages: new MessageRepository(conn),
-    };
+    throw new Error('DB not initialised — await initDb() before accessing db');
   }
   return _db;
 }
 
-/** Convenience singleton for the common case. Initialised lazily on first access. */
+/** Convenience singleton — proxy ensures initDb() has been called first. */
 export const db: DB = new Proxy({} as DB, {
   get(_target, prop: keyof DB) {
     return getDb()[prop];

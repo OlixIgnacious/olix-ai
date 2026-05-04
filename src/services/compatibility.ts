@@ -8,10 +8,10 @@ import {logger} from '@/utils/logger';
 const CACHE_KEY = '@olix/compatibility_result';
 
 const REQUIREMENTS = {
-  minRamBytes: 6 * 1024 * 1024 * 1024, // 6 GB
+  minRamBytes: 6 * 1024 * 1024 * 1024,        // 6 GB
   minFreeStorageBytes: 2.5 * 1024 * 1024 * 1024, // 2.5 GB
   minIosVersion: 16,
-  minAndroidApi: 26, // Android 8.0
+  minAndroidApi: 26,
 } as const;
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -31,7 +31,7 @@ export type DeviceSnapshot = {
 // ─── Pure logic (unit-testable, no native calls) ──────────────────────────────
 
 /**
- * Evaluates device measurements against Olix requirements.
+ * Evaluates device measurements against Exis requirements.
  * Has no side effects — safe to call in tests with any values.
  */
 export function evaluateCompatibility(snapshot: DeviceSnapshot): CompatibilityResult {
@@ -67,6 +67,20 @@ export function evaluateCompatibility(snapshot: DeviceSnapshot): CompatibilityRe
     return {compatible: false, reasons};
   }
   return {compatible: true};
+}
+
+/**
+ * Returns a soft warning string if storage is tight but above the hard minimum,
+ * or null if storage is fine. Does not fail — the hard check is in evaluateCompatibility.
+ */
+export function getStorageWarning(freeBytes: number): string | null {
+  const SOFT = 3.5 * 1024 * 1024 * 1024;
+  const HARD = REQUIREMENTS.minFreeStorageBytes;
+  if (freeBytes >= HARD && freeBytes < SOFT) {
+    const freeGB = (freeBytes / 1024 ** 3).toFixed(1);
+    return `Storage is tight (${freeGB} GB free). Download may fail if space runs low.`;
+  }
+  return null;
 }
 
 // ─── Device info fetcher ──────────────────────────────────────────────────────

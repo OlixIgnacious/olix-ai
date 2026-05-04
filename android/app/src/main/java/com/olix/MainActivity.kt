@@ -1,5 +1,6 @@
 package com.olix
 
+import android.os.Bundle
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
@@ -8,15 +9,19 @@ import com.facebook.react.defaults.DefaultReactActivityDelegate
 class MainActivity : ReactActivity() {
 
   /**
-   * Returns the name of the main component registered from JavaScript. This is used to schedule
-   * rendering of the component.
+   * Switch from SplashTheme (set in AndroidManifest) to AppTheme before the
+   * React Native view is attached. This keeps the splash visible during the
+   * JS bundle load and avoids a white flash on cold start.
    */
-  override fun getMainComponentName(): String = "Olix"
+  override fun onCreate(savedInstanceState: Bundle?) {
+    setTheme(R.style.AppTheme)
+    // Pass null so Android never tries to restore react-native-screens fragments,
+    // which always throws IllegalStateException when restored.
+    super.onCreate(null)
+  }
 
-  /**
-   * Returns the instance of the [ReactActivityDelegate]. We use [DefaultReactActivityDelegate]
-   * which allows you to enable New Architecture with a single boolean flags [fabricEnabled]
-   */
+  override fun getMainComponentName(): String = "Exis"
+
   override fun createReactActivityDelegate(): ReactActivityDelegate =
       DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled)
 }

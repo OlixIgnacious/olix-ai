@@ -1,4 +1,4 @@
-# Olix — Android-First Scope
+# Exis — Android-First Scope
 
 > **Decision (2026-04-12):** Build and ship the Android app first. iOS is deferred until Android is fully working and released. All phases below reflect Android-only until the iOS section at the bottom.
 
@@ -7,7 +7,7 @@
 ## Completed
 
 ### Phase 1 — Environment & Scaffold ✅
-- Bare React Native project initialised (Olix)
+- Bare React Native project initialised (Exis)
 - Three environments configured: Dev (`com.olix.dev`), QA (`com.olix.qa`), Prod (`com.olix`)
 - TypeScript strict mode, ESLint, Prettier
 - Folder structure: `screens/`, `components/`, `native/`, `services/`, `store/`, `config/`, `navigation/`, `utils/`, `db/`

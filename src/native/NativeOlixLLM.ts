@@ -10,7 +10,7 @@ import {NativeEventEmitter, NativeModules, Platform} from 'react-native';
 type NativeOlixLLMType = {
   loadModel(path: string): Promise<void>;
   /** Resolves when generation completes. Tokens arrive via NativeEventEmitter. */
-  generateStream(prompt: string): Promise<void>;
+  generateStream(prompt: string, imagePath?: string | null): Promise<void>;
   stopGeneration(): void;
   addListener(eventName: string): void;
   removeListeners(count: number): void;
@@ -29,12 +29,12 @@ if (!OlixLLM) {
 export const NativeOlixLLM: NativeOlixLLMType = OlixLLM;
 
 // NativeEventEmitter on iOS needs a reference to the native module for
-// addListener/removeListeners bookkeeping. On Android it's not required.
-// OlixLLM satisfies NativeModule structurally — the explicit cast bridges
-// our custom type to RN's internal interface.
-export const OlixLLMEventEmitter = new NativeEventEmitter(
-  Platform.OS === 'ios' ? (OlixLLM as unknown as NativeModule) : undefined,
-);
+// addListener/removeListeners bookkeeping. On Android, passing undefined
+// throws in newer RN versions — create without an argument instead.
+export const OlixLLMEventEmitter =
+  Platform.OS === 'ios'
+    ? new NativeEventEmitter(OlixLLM as unknown as NativeModule)
+    : new NativeEventEmitter();
 
 export const LLM_EVENTS = {
   TOKEN: 'OlixLLM_token',

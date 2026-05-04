@@ -1,4 +1,0 @@
-// Dev environment — bundle com.olix.dev
-PRODUCT_BUNDLE_IDENTIFIER = com.olix.dev
-DISPLAY_NAME = Olix Dev
-APP_ENV = dev

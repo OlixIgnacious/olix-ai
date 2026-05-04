@@ -1,31 +1,63 @@
-/**
- * MessageBubble — renders a single chat message.
- *
- * User messages appear on the right in a dark bubble.
- * Assistant messages appear on the left in a light bubble.
- * A blinking cursor (▋) is shown on the active streaming bubble.
- */
-
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {ActivityIndicator, StyleSheet, Text, View} from 'react-native';
+import Markdown from 'react-native-markdown-display';
+import {colors} from '@/theme/colors';
 
 type Props = {
   role: 'user' | 'assistant';
   content: string;
-  /** True only on the in-progress assistant bubble while tokens are streaming. */
   isStreaming?: boolean;
 };
+
+// ─── User bubble content ──────────────────────────────────────────────────────
+
+const IMAGE_RE = /^\[image:\s*([^\]]+)\]\n?/;
+const DOC_RE = /^\[doc:\s*([^\]]+)\]\n?/;
+
+function UserBubbleContent({content}: {content: string}): React.JSX.Element {
+  const imgMatch = content.match(IMAGE_RE);
+  const docMatch = !imgMatch ? content.match(DOC_RE) : null;
+  const match = imgMatch ?? docMatch;
+
+  if (match) {
+    const filename = match[1]?.trim() ?? '';
+    const label = imgMatch ? `🖼  ${filename}` : `📄  ${filename}`;
+    const rest = content.slice(match[0].length).trim();
+    return (
+      <>
+        <View style={styles.attachChip}>
+          <Text style={styles.attachChipText} numberOfLines={1}>{label}</Text>
+        </View>
+        {rest ? <Text style={[styles.textUser, styles.attachRest]}>{rest}</Text> : null}
+      </>
+    );
+  }
+  return <Text style={styles.textUser}>{content}</Text>;
+}
+
+// ─── Bubble ───────────────────────────────────────────────────────────────────
 
 export function MessageBubble({role, content, isStreaming = false}: Props): React.JSX.Element {
   const isUser = role === 'user';
 
   return (
     <View style={[styles.row, isUser ? styles.rowUser : styles.rowAssistant]}>
+      {!isUser && (
+        <View style={styles.avatar}>
+          <Text style={styles.avatarText}>{'A'}</Text>
+        </View>
+      )}
       <View style={[styles.bubble, isUser ? styles.bubbleUser : styles.bubbleAssistant]}>
-        <Text style={[styles.text, isUser ? styles.textUser : styles.textAssistant]}>
-          {content}
-          {isStreaming ? <Text style={styles.cursor}>{' ▋'}</Text> : null}
-        </Text>
+        {isUser ? (
+          <UserBubbleContent content={content} />
+        ) : isStreaming && !content ? (
+          <ActivityIndicator size="small" color={colors.purpleDim} style={styles.thinkingSpinner} />
+        ) : (
+          <>
+            <Markdown style={markdownStyles}>{content}</Markdown>
+            {isStreaming ? <Text style={styles.cursor}>{' ▋'}</Text> : null}
+          </>
+        )}
       </View>
     </View>
   );
@@ -38,38 +70,110 @@ const styles = StyleSheet.create({
     marginHorizontal: 12,
     marginVertical: 4,
     flexDirection: 'row',
+    alignItems: 'flex-end',
   },
   rowUser: {
     justifyContent: 'flex-end',
   },
   rowAssistant: {
     justifyContent: 'flex-start',
+    gap: 8,
+  },
+  avatar: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: colors.surface,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+    marginBottom: 2,
+  },
+  avatarText: {
+    color: colors.textSecondary,
+    fontSize: 13,
+    fontWeight: '600',
   },
   bubble: {
-    borderRadius: 16,
+    borderRadius: 20,
     maxWidth: '80%',
     paddingHorizontal: 14,
     paddingVertical: 10,
   },
   bubbleUser: {
-    backgroundColor: '#1A1A1A',
-    borderBottomRightRadius: 4,
+    backgroundColor: colors.userBubble,
+    borderBottomRightRadius: 6,
   },
   bubbleAssistant: {
-    backgroundColor: '#F0F0F0',
-    borderBottomLeftRadius: 4,
+    backgroundColor: colors.assistantBubble,
+    borderBottomLeftRadius: 6,
   },
-  text: {
+  textUser: {
+    color: colors.userBubbleText,
     fontSize: 15,
     lineHeight: 21,
   },
-  textUser: {
-    color: '#FFFFFF',
+  attachChip: {
+    backgroundColor: 'rgba(255,255,255,0.18)',
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    marginBottom: 2,
   },
-  textAssistant: {
-    color: '#1A1A1A',
+  attachChipText: {
+    color: colors.userBubbleText,
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  attachRest: {
+    marginTop: 4,
   },
   cursor: {
-    color: '#666',
+    color: colors.textSecondary,
+  },
+  thinkingSpinner: {
+    marginVertical: 4,
+    alignSelf: 'flex-start',
+  },
+});
+
+const markdownStyles = StyleSheet.create({
+  body: {
+    color: colors.assistantBubbleText,
+    fontSize: 15,
+    lineHeight: 21,
+  },
+  strong: {
+    fontWeight: '700',
+  },
+  em: {
+    fontStyle: 'italic',
+  },
+  bullet_list: {
+    marginVertical: 4,
+  },
+  ordered_list: {
+    marginVertical: 4,
+  },
+  list_item: {
+    marginVertical: 2,
+  },
+  paragraph: {
+    marginVertical: 2,
+  },
+  code_inline: {
+    backgroundColor: '#E5E2DC',
+    borderRadius: 4,
+    fontFamily: 'monospace',
+    fontSize: 13,
+    paddingHorizontal: 4,
+  },
+  fence: {
+    backgroundColor: '#E5E2DC',
+    borderRadius: 8,
+    fontFamily: 'monospace',
+    fontSize: 13,
+    padding: 10,
+    marginVertical: 6,
   },
 });

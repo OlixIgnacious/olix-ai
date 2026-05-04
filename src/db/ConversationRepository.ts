@@ -13,6 +13,7 @@ import type {Conversation, DBHandle, SQLArg} from './types';
 type ConversationRow = {
   id: string;
   title: string;
+  preview: string | null;
   created_at: number;
   updated_at: number;
 };
@@ -21,6 +22,7 @@ function toConversation(row: ConversationRow): Conversation {
   return {
     id: row.id,
     title: row.title,
+    preview: row.preview ?? null,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -31,32 +33,43 @@ function toConversation(row: ConversationRow): Conversation {
 export class ConversationRepository {
   constructor(private readonly db: DBHandle) {}
 
+  /**
+   * Add preview column to existing installs that pre-date this migration.
+   * SQLite throws "duplicate column name" if the column already exists —
+   * we catch and ignore that error so the call is always safe.
+   */
+  migrateAddPreview(): void {
+    try {
+      this.db.execute('ALTER TABLE conversations ADD COLUMN preview TEXT');
+    } catch (_) {}
+  }
+
   /** Insert a new conversation and return the full record. */
   create(title: string): Conversation {
     const id = uuidv4();
     const now = Date.now();
     this.db.execute(
-      'INSERT INTO conversations (id, title, created_at, updated_at) VALUES (?, ?, ?, ?)',
-      [id, title, now, now],
+      'INSERT INTO conversations (id, title, preview, created_at, updated_at) VALUES (?, ?, ?, ?, ?)',
+      [id, title, null, now, now],
     );
-    return {id, title, createdAt: now, updatedAt: now};
+    return {id, title, preview: null, createdAt: now, updatedAt: now};
   }
 
   /** All conversations, newest activity first. */
   findAll(): Conversation[] {
     const {rows} = this.db.execute(
-      'SELECT id, title, created_at, updated_at FROM conversations ORDER BY updated_at DESC',
+      'SELECT id, title, preview, created_at, updated_at FROM conversations ORDER BY updated_at DESC',
     );
-    return (rows as ConversationRow[]).map(toConversation);
+    return ((rows ?? []) as ConversationRow[]).map(toConversation);
   }
 
   /** Single conversation by ID, or null if it does not exist. */
   findById(id: string): Conversation | null {
     const {rows} = this.db.execute(
-      'SELECT id, title, created_at, updated_at FROM conversations WHERE id = ?',
+      'SELECT id, title, preview, created_at, updated_at FROM conversations WHERE id = ?',
       [id as SQLArg],
     );
-    const row = rows[0] as ConversationRow | undefined;
+    const row = (rows ?? [])[0] as ConversationRow | undefined;
     return row ? toConversation(row) : null;
   }
 
@@ -67,6 +80,11 @@ export class ConversationRepository {
       Date.now(),
       id,
     ]);
+  }
+
+  /** Update the preview snippet shown in the conversation list. */
+  updatePreview(id: string, preview: string): void {
+    this.db.execute('UPDATE conversations SET preview = ? WHERE id = ?', [preview, id]);
   }
 
   /**
@@ -80,5 +98,10 @@ export class ConversationRepository {
   /** Delete a conversation and all its messages (CASCADE handles the FK). */
   delete(id: string): void {
     this.db.execute('DELETE FROM conversations WHERE id = ?', [id as SQLArg]);
+  }
+
+  /** Delete every conversation and all their messages. */
+  deleteAll(): void {
+    this.db.execute('DELETE FROM conversations');
   }
 }
