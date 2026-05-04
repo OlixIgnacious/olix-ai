@@ -1,105 +1,95 @@
 <div align="center">
 
-<img src="assets/banner.png" alt="Boxi" width="520" />
+<br />
+
+<img src="assets/banner.png" alt="Boxi" width="460" />
 
 <br />
 <br />
 
-**Your private mind, on local silicon.**
-
-Boxi is a fully offline AI assistant for Android. Powered by Gemma 4, running entirely on your device — no cloud, no subscriptions, no data collection.
+*Your private mind, on local silicon.*
 
 <br />
 
-[![Download APK](https://img.shields.io/badge/Download_APK-v1.0.0-000000?style=for-the-badge&logo=android&logoColor=white)](https://github.com/OlixIgnacious/boxi-ai/releases/latest)
-[![Platform](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://play.google.com/store)
-[![React Native](https://img.shields.io/badge/React_Native_0.85-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactnative.dev)
-[![Gemma 4](https://img.shields.io/badge/Gemma_4-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev/gemma)
-[![100% Offline](https://img.shields.io/badge/100%25_Offline-000000?style=for-the-badge)](.)
+[![Download APK](https://img.shields.io/badge/↓%20Download%20APK-v1.0.0-000?style=for-the-badge)](https://github.com/OlixIgnacious/boxi-ai/releases/latest)&nbsp;
+[![Android](https://img.shields.io/badge/Android-7.0+-3DDC84?style=for-the-badge&logo=android&logoColor=white)](.)&nbsp;
+[![Offline](https://img.shields.io/badge/100%25%20Offline-000?style=for-the-badge)](.)
+
+<br />
 
 </div>
 
 ---
 
-## Why Boxi?
-
-Most AI assistants send your conversations to the cloud. Boxi doesn't. Everything — the model, your chats, your voice — stays on your device, always.
-
-<br />
-
-<div align="center">
-
-| 🔒 **Private by default** | ⚡ **Works offline** | 🎙️ **Voice mode** |
-|:---:|:---:|:---:|
-| Conversations never leave your phone. No account, no tracking, no logs. | Download once, use forever. No Wi-Fi needed after setup. | Talk hands-free. Boxi listens, thinks, and speaks back. |
-
-| 📄 **Document Q&A** | 🖼️ **Vision** | 💬 **Multi-turn chat** |
-|:---:|:---:|:---:|
-| Attach PDFs or text files and ask questions about them. | Describe images or ask visual questions with the multimodal model. | Full conversation history with AI-generated titles and previews. |
-
-</div>
+Boxi is a **fully offline AI assistant** for Android, powered by Google's Gemma 4 model running entirely on your device. No subscription. No cloud. No data collection. Your conversations never leave your phone.
 
 ---
 
-## How it works
+## Features
 
-```
-You speak  ──▶  On-device STT  ──▶  Gemma 4 (LiteRT)  ──▶  Kokoro TTS  ──▶  You hear
-                                          │
-                                    Stays on device.
-                                    Always.
-```
+**🔒 Private by default**
+Conversations are stored locally in SQLite and never transmitted anywhere. No account required.
 
-Boxi uses a **pipeline architecture** — Kokoro begins synthesising the first sentence while Gemma is still generating the rest. You hear a response in seconds, not minutes.
+**⚡ Works offline**
+Download the model once on first launch (~2.5 GB). After that, Boxi works with no internet connection — forever.
+
+**🎙 Voice mode**
+Tap the mic, speak naturally. Boxi transcribes on-device, generates a response, and speaks it back using Kokoro neural TTS.
+
+**📄 Document Q&A**
+Attach a PDF or text file to any conversation and ask questions about it. Boxi reads and reasons over your documents locally.
+
+**🖼 Vision**
+Send a photo and ask about it. The Gemma 4 multimodal model analyzes images entirely on-device.
+
+**💬 Multi-turn chat**
+Full conversation history with AI-generated titles, message previews, and streaming token rendering.
 
 ---
 
-## Tech
+## How the voice pipeline works
 
-<details>
-<summary><strong>Frontend</strong></summary>
+```
+You speak
+    │
+    ▼
+Android SpeechRecognizer (on-device, API 31+)
+    │
+    ▼
+Gemma 4 via LiteRT — streams tokens as they generate
+    │
+    ▼
+Kokoro TTS (Sherpa-ONNX) — pre-synthesises next chunk
+while the current one plays on a shared AudioTrack
+    │
+    ▼
+You hear a response in seconds
+```
 
-| Package | Role |
-|---------|------|
-| React Native 0.85 | UI framework |
-| React Navigation 7 | Stack + bottom tab navigation |
-| react-native-svg | Voice wave animation & SVG icons |
-| op-sqlite | Local conversation + message storage |
-| rn-fetch-blob | Resumable model download with progress |
+---
 
-</details>
+## Tech stack
 
-<details>
-<summary><strong>Native (Kotlin)</strong></summary>
+**Frontend** — React Native 0.85, React Navigation 7, react-native-svg, op-sqlite, rn-fetch-blob
 
-| Library | Role |
-|---------|------|
-| Google AI Edge LiteRT 0.10 | On-device Gemma 4 inference |
-| Sherpa-ONNX 1.12.39 | Kokoro neural TTS + espeak-ng phonemizer |
-| Android SpeechRecognizer | On-device speech-to-text (API 31+) |
-| Apache Commons Compress | Extracts the Kokoro voice model archive |
+**Native (Kotlin)** — Google AI Edge LiteRT 0.10 · Sherpa-ONNX 1.12.39 · Android SpeechRecognizer · Apache Commons Compress
 
-</details>
+**Models**
 
-<details>
-<summary><strong>Models</strong></summary>
-
-| Model | Size | Source |
-|-------|------|--------|
-| Gemma 4 E4B Instruct (`.litertlm`) | ~2.5 GB | [HuggingFace](https://huggingface.co/litert-community/gemma-4-E4B-it-litert-lm) |
-| Kokoro EN v0.19 (Sherpa-ONNX) | ~80 MB | [k2-fsa/sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx) |
-
-</details>
+| | |
+|---|---|
+| LLM | Gemma 4 E4B Instruct — `.litertlm` format, ~2.5 GB |
+| Voice | Kokoro EN v0.19 via Sherpa-ONNX — ~80 MB |
 
 ---
 
 ## Device requirements
 
-| | Minimum |
+| | |
 |---|---|
-| Android | 7.0 (API 24) |
-| RAM | 6 GB |
-| Free storage | 3 GB |
+| Android | 7.0+ (API 24) |
+| RAM | 6 GB minimum |
+| Storage | 3 GB free |
 | Architecture | arm64-v8a |
 
 ---
@@ -107,36 +97,30 @@ Boxi uses a **pipeline architecture** — Kokoro begins synthesising the first s
 ## Build
 
 ```sh
-# 1. Install JS dependencies
+# Dependencies
 npm install
 
-# 2. Bundle
+# Bundle JS
 npx react-native bundle \
   --platform android --dev false \
   --entry-file index.js \
   --bundle-output android/app/src/main/assets/index.android.bundle \
   --assets-dest android/app/src/main/res
 
-# 3. Debug APK
+# Debug
 cd android && ./gradlew assembleDevDebug
 
-# 4. Production AAB (Play Store)
+# Production (Play Store)
 cd android && ./gradlew bundleProdRelease
 ```
 
-**Flavors**
-
-| Flavor | App ID | Label |
-|--------|--------|-------|
-| `dev` | `com.olix.dev` | Boxi Dev |
-| `qa` | `com.olix.qa` | Boxi QA |
-| `prod` | `com.olix` | Boxi |
+**Flavors:** `dev` → `com.olix.dev` · `qa` → `com.olix.qa` · `prod` → `com.olix`
 
 ---
 
 ## Privacy
 
-Boxi collects nothing. No analytics, no telemetry, no crash reporting sent to any server. After the one-time model download, the app works entirely without internet. Your conversations are stored in a local SQLite database and never transmitted anywhere.
+Boxi collects nothing. No analytics, no telemetry, no crash reporting sent anywhere. The only network request the app ever makes is the one-time model download on first launch. After that, it is fully air-gapped.
 
 ---
 
