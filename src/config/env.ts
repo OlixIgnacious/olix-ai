@@ -68,7 +68,7 @@ export const AppConfig = {
   isDev: ENV === 'dev',
   isQA: ENV === 'qa',
   isProd: ENV === 'prod',
-  displayName: resolveString(_bc?.APP_DISPLAY_NAME ?? Config.APP_DISPLAY_NAME, 'APP_DISPLAY_NAME', 'Olix'),
+  displayName: resolveString(_bc?.APP_DISPLAY_NAME ?? Config.APP_DISPLAY_NAME, 'APP_DISPLAY_NAME', 'akhr'),
   bundleId: resolveString(_bc?.BUNDLE_ID ?? Config.BUNDLE_ID, 'BUNDLE_ID', 'com.olix.dev'),
   modelCdnUrl: resolveString(
     _bc?.MODEL_CDN_URL ?? Config.MODEL_CDN_URL,

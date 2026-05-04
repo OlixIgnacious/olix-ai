@@ -84,13 +84,20 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
+    // litertlm-android:0.10.0 is compiled with Kotlin 2.3.0 (metadata 2.3.0).
+    // Our project uses Kotlin 2.1.x which can only read up to 2.2.0 by default.
+    // Suppressing this check is safe — the JVM bytecode itself is compatible.
+    kotlinOptions {
+        freeCompilerArgs += ["-Xskip-metadata-version-check"]
+    }
+
     namespace "com.olix"
     defaultConfig {
         applicationId "com.olix"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
     }
 
     flavorDimensions "environment"
@@ -98,28 +105,28 @@ android {
         dev {
             dimension "environment"
             applicationId "com.olix.dev"
-            resValue "string", "app_name", "Olix Dev"
+            resValue "string", "app_name", "akhr Dev"
             buildConfigField "String", "APP_ENV", '"dev"'
-            buildConfigField "String", "MODEL_CDN_URL", '"https://huggingface.co/litert-community/gemma-4-E2B-it-litert-lm/resolve/main"'
-            buildConfigField "String", "APP_DISPLAY_NAME", '"Olix Dev"'
+            buildConfigField "String", "MODEL_CDN_URL", '"https://huggingface.co/litert-community/gemma-4-E4B-it-litert-lm/resolve/main"'
+            buildConfigField "String", "APP_DISPLAY_NAME", '"akhr Dev"'
             buildConfigField "String", "BUNDLE_ID", '"com.olix.dev"'
         }
         qa {
             dimension "environment"
             applicationId "com.olix.qa"
-            resValue "string", "app_name", "Olix QA"
+            resValue "string", "app_name", "akhr QA"
             buildConfigField "String", "APP_ENV", '"qa"'
-            buildConfigField "String", "MODEL_CDN_URL", '"https://huggingface.co/litert-community/gemma-4-E2B-it-litert-lm/resolve/main"'
-            buildConfigField "String", "APP_DISPLAY_NAME", '"Olix QA"'
+            buildConfigField "String", "MODEL_CDN_URL", '"https://huggingface.co/litert-community/gemma-4-E4B-it-litert-lm/resolve/main"'
+            buildConfigField "String", "APP_DISPLAY_NAME", '"akhr QA"'
             buildConfigField "String", "BUNDLE_ID", '"com.olix.qa"'
         }
         prod {
             dimension "environment"
             applicationId "com.olix"
-            resValue "string", "app_name", "Olix"
+            resValue "string", "app_name", "akhr"
             buildConfigField "String", "APP_ENV", '"prod"'
-            buildConfigField "String", "MODEL_CDN_URL", '"https://huggingface.co/litert-community/gemma-4-E2B-it-litert-lm/resolve/main"'
-            buildConfigField "String", "APP_DISPLAY_NAME", '"Olix"'
+            buildConfigField "String", "MODEL_CDN_URL", '"https://huggingface.co/litert-community/gemma-4-E4B-it-litert-lm/resolve/main"'
+            buildConfigField "String", "APP_DISPLAY_NAME", '"akhr"'
             buildConfigField "String", "BUNDLE_ID", '"com.olix"'
         }
     }
@@ -131,15 +138,19 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        release {
+            storeFile file('akhr-release.keystore')
+            storePassword 't9#VmP2$kL7!zXw4^Qc8@nRf'
+            keyAlias 'akhr'
+            keyPassword 't9#VmP2$kL7!zXw4^Qc8@nRf'
+        }
     }
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
         }
         release {
-            // Caution! In production, you need to generate your own keystore file.
-            // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
@@ -150,8 +161,17 @@ dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
 
-    // On-device LLM inference via MediaPipe
-    implementation("com.google.mediapipe:tasks-genai:0.10.24")
+    // On-device LLM inference via Google AI Edge LiteRT (loads .litertlm models)
+    implementation("com.google.ai.edge.litertlm:litertlm-android:0.10.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+
+    // PDF text extraction (Apache PDFBox port for Android)
+    implementation("com.tom-roush:pdfbox-android:2.0.27.0")
+
+    // Kokoro on-device TTS via Sherpa-ONNX (includes espeak-ng phonemizer + ONNX runtime)
+    implementation("com.github.k2-fsa:sherpa-onnx:v1.12.39")
+    // Tar.bz2 extraction for Kokoro model archive
+    implementation("org.apache.commons:commons-compress:1.26.1")
 
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")

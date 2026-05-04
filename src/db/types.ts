@@ -13,7 +13,8 @@ export type SQLArg = string | number | null;
 
 /** Minimal synchronous DB surface the repositories require. */
 export interface DBHandle {
-  execute(sql: string, args?: SQLArg[]): {rows: Record<string, unknown>[]};
+  // op-sqlite returns rows as undefined when the result set is empty.
+  execute(sql: string, args?: SQLArg[]): {rows: Record<string, unknown>[] | undefined};
 }
 
 // ─── Domain types ─────────────────────────────────────────────────────────────
@@ -21,6 +22,7 @@ export interface DBHandle {
 export type Conversation = {
   id: string;
   title: string;
+  preview: string | null;
   createdAt: number; // Unix ms
   updatedAt: number; // Unix ms — drives sort order in the list
 };

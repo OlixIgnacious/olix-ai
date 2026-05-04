@@ -15,8 +15,17 @@ import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import type {RootStackParamList} from '@/navigation/types';
 import {db} from '@/db';
 import type {Conversation} from '@/db';
+import {colors} from '@/theme/colors';
+import {GradientBackground} from '@/components/GradientBackground';
 
-type Nav = NativeStackNavigationProp<RootStackParamList, 'ConversationList'>;
+type Nav = NativeStackNavigationProp<RootStackParamList>;
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function cleanTitle(raw: string): string {
+  const stripped = raw.replace(/^\[(image|doc):\s*[^\]]*\]?\s*/i, '').trim();
+  return stripped || raw;
+}
 
 // ─── Screen ───────────────────────────────────────────────────────────────────
 
@@ -24,25 +33,20 @@ export function ConversationListScreen(): React.JSX.Element {
   const navigation = useNavigation<Nav>();
   const [conversations, setConversations] = useState<Conversation[]>([]);
 
-  // ── Reload on every focus ─────────────────────────────────────────────────
   useFocusEffect(
     useCallback(() => {
       setConversations(db.conversations.findAll());
     }, []),
   );
 
-  // ── Header buttons ────────────────────────────────────────────────────────
   useLayoutEffect(() => {
     navigation.setOptions({
-      // eslint-disable-next-line react/no-unstable-nested-components
-      headerLeft: () => <SettingsButton onPress={() => navigation.navigate('Settings')} />,
+      headerLeft: () => null,
       // eslint-disable-next-line react/no-unstable-nested-components
       headerRight: () => <NewChatButton onPress={handleNewChat} />,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigation]);
-
-  // ── Handlers ──────────────────────────────────────────────────────────────
 
   function handleNewChat(): void {
     const conv = db.conversations.create('New Chat');
@@ -63,13 +67,12 @@ export function ConversationListScreen(): React.JSX.Element {
     ]);
   }
 
-  // ── Empty state ───────────────────────────────────────────────────────────
-
   if (conversations.length === 0) {
     return (
       <View style={styles.empty}>
+        <GradientBackground gradientId="chatListEmptyBg" startColor="#F8F6FF" endColor="#DDD6FE" />
         <Text style={styles.emptyTitle}>{'No conversations yet'}</Text>
-        <Text style={styles.emptySubtitle}>{'Start chatting with Olix'}</Text>
+        <Text style={styles.emptySubtitle}>{'Start chatting with akhr'}</Text>
         <TouchableOpacity style={styles.emptyButton} onPress={handleNewChat}>
           <Text style={styles.emptyButtonText}>{'New chat'}</Text>
         </TouchableOpacity>
@@ -77,22 +80,24 @@ export function ConversationListScreen(): React.JSX.Element {
     );
   }
 
-  // ── List ──────────────────────────────────────────────────────────────────
-
   return (
-    <FlatList
-      data={conversations}
-      keyExtractor={item => item.id}
-      renderItem={({item}) => (
-        <ConversationRow
-          conversation={item}
-          onPress={() => navigation.navigate('Chat', {conversationId: item.id})}
-          onLongPress={() => handleDelete(item.id, item.title)}
-        />
-      )}
-      ItemSeparatorComponent={Separator}
-      contentContainerStyle={styles.list}
-    />
+    <View style={styles.container}>
+      <GradientBackground gradientId="chatListBg" startColor="#F8F6FF" endColor="#DDD6FE" />
+      <FlatList
+        data={conversations}
+        keyExtractor={item => item.id}
+        renderItem={({item}) => (
+          <ConversationRow
+            conversation={item}
+            onPress={() => navigation.navigate('Chat', {conversationId: item.id})}
+            onLongPress={() => handleDelete(item.id, cleanTitle(item.title))}
+          />
+        )}
+        ItemSeparatorComponent={Separator}
+        contentContainerStyle={styles.list}
+        style={styles.screen}
+      />
+    </View>
   );
 }
 
@@ -125,9 +130,16 @@ type RowProps = {
 function ConversationRow({conversation, onPress, onLongPress}: RowProps): React.JSX.Element {
   return (
     <TouchableOpacity style={styles.row} onPress={onPress} onLongPress={onLongPress}>
-      <Text style={styles.rowTitle} numberOfLines={1}>
-        {conversation.title}
-      </Text>
+      <View style={styles.rowBody}>
+        <Text style={styles.rowTitle} numberOfLines={1}>
+          {cleanTitle(conversation.title)}
+        </Text>
+        {conversation.preview ? (
+          <Text style={styles.rowPreview} numberOfLines={2}>
+            {conversation.preview}
+          </Text>
+        ) : null}
+      </View>
       <Text style={styles.rowDate}>{formatDate(conversation.updatedAt)}</Text>
     </TouchableOpacity>
   );
@@ -151,65 +163,85 @@ function formatDate(ms: number): string {
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.lavender,
+  },
+  screen: {
+    backgroundColor: 'transparent',
+  },
   list: {
     flexGrow: 1,
   },
   row: {
-    backgroundColor: '#FFF',
+    backgroundColor: 'transparent',
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingVertical: 14,
   },
-  rowTitle: {
-    color: '#1A1A1A',
+  rowBody: {
     flex: 1,
-    fontSize: 15,
-    fontWeight: '500',
     marginRight: 12,
   },
+  rowTitle: {
+    color: colors.navy,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  rowPreview: {
+    color: colors.textSecondary,
+    fontSize: 13,
+    marginTop: 2,
+    lineHeight: 18,
+  },
   rowDate: {
-    color: '#999',
+    color: colors.textSecondary,
     fontSize: 12,
     flexShrink: 0,
+    marginTop: 2,
   },
   separator: {
-    backgroundColor: '#F0F0F0',
+    backgroundColor: colors.border,
     height: StyleSheet.hairlineWidth,
     marginLeft: 16,
   },
   empty: {
     alignItems: 'center',
+    backgroundColor: colors.lavender,
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: 32,
     gap: 8,
   },
   emptyTitle: {
-    color: '#1A1A1A',
+    color: colors.navy,
     fontSize: 17,
     fontWeight: '600',
   },
   emptySubtitle: {
-    color: '#888',
+    color: colors.textSecondary,
     fontSize: 14,
     marginBottom: 8,
   },
   emptyButton: {
-    backgroundColor: '#1A1A1A',
-    borderRadius: 10,
+    backgroundColor: colors.purple,
+    borderRadius: 20,
     marginTop: 8,
     paddingHorizontal: 28,
     paddingVertical: 12,
   },
   emptyButtonText: {
-    color: '#FFF',
+    color: '#FFFFFF',
     fontSize: 15,
     fontWeight: '600',
   },
   headerBtn: {
-    color: '#007AFF',
-    fontSize: 16,
+    color: colors.navy,
+    fontSize: 15,
+    fontWeight: '600',
+    marginRight: 4,
+    paddingHorizontal: 4,
   },
 });

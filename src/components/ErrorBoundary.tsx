@@ -62,6 +62,21 @@ export class ErrorBoundary extends React.Component<Props, State> {
   }
 }
 
+export function withErrorBoundary<P extends object>(
+  Component: React.ComponentType<P>,
+  label: string,
+): React.ComponentType<P> {
+  function WithBoundary(props: P): React.JSX.Element {
+    return (
+      <ErrorBoundary label={label}>
+        <Component {...props} />
+      </ErrorBoundary>
+    );
+  }
+  WithBoundary.displayName = `WithBoundary(${Component.displayName ?? Component.name})`;
+  return WithBoundary;
+}
+
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',

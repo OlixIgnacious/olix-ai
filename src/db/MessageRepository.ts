@@ -50,7 +50,7 @@ export class MessageRepository {
       'SELECT id, conversation_id, role, content, created_at FROM messages WHERE conversation_id = ? ORDER BY created_at ASC',
       [conversationId as SQLArg],
     );
-    return (rows as MessageRow[]).map(toMessage);
+    return ((rows ?? []) as MessageRow[]).map(toMessage);
   }
 
   /**

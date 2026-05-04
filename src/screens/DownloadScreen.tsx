@@ -13,14 +13,18 @@
  */
 
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {ActivityIndicator, Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {ActivityIndicator, Alert, DeviceEventEmitter, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import DeviceInfo from 'react-native-device-info';
 import RNFetchBlob from 'rn-fetch-blob';
 import type {RootStackParamList} from '@/navigation/types';
 import {ModelDownloader} from '@/services/ModelDownloader';
 import type {DownloadProgress} from '@/services/ModelDownloader';
+import {getStorageWarning} from '@/services/compatibility';
 import {loadModel} from '@/native';
+import {downloadFile, extractTarBz2, getFilesDir} from '@/native/NativeOlixDownload';
+import {initializeTTS} from '@/native/NativeOlixTTS';
 import {logger} from '@/utils/logger';
 import {AppConfig} from '@/config/env';
 import {getFlag} from '@/config/featureFlags';
@@ -31,17 +35,24 @@ type Phase =
   | {kind: 'checking'}
   | {kind: 'downloading'; progress: DownloadProgress}
   | {kind: 'loading'}
+  | {kind: 'downloading-voice'; progress: DownloadProgress}
+  | {kind: 'extracting-voice'}
   | {kind: 'error'; message: string};
 
 // Model is ~2.5 GB; require at least that much free before downloading.
 const MIN_FREE_BYTES = 2.5 * 1024 * 1024 * 1024;
+const KOKORO_URL =
+  'https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/kokoro-en-v0_19.tar.bz2';
+const KOKORO_KEY = '@olix/kokoro_ready';
 
 export function DownloadScreen({navigation}: Props): React.JSX.Element {
   const [phase, setPhase] = useState<Phase>({kind: 'checking'});
+  const [storageWarning, setStorageWarning] = useState<string | null>(null);
   const downloaderRef = useRef<ModelDownloader | null>(null);
 
   const run = useCallback(async (): Promise<void> => {
     setPhase({kind: 'checking'});
+    setStorageWarning(null);
 
     // 1. Low storage check
     const freeBytes = await DeviceInfo.getFreeDiskStorage();
@@ -53,6 +64,9 @@ export function DownloadScreen({navigation}: Props): React.JSX.Element {
       });
       return;
     }
+
+    // Soft warning: storage is adequate but tight
+    setStorageWarning(getStorageWarning(freeBytes));
 
     const downloader = new ModelDownloader(progress => {
       setPhase({kind: 'downloading', progress});
@@ -80,7 +94,51 @@ export function DownloadScreen({navigation}: Props): React.JSX.Element {
       return;
     }
 
-    // 3. Check for model update (only when flag is enabled)
+    // 3. Download + initialise Kokoro voice model (skip if already done)
+    const kokoroReady = await AsyncStorage.getItem(KOKORO_KEY);
+    if (!kokoroReady) {
+      try {
+        const filesDir = await getFilesDir();
+        const kokoroBaseDir = `${filesDir}/kokoro`;
+        const kokoroDir = `${kokoroBaseDir}/kokoro-en-v0_19`;
+        const tarPath = `${filesDir}/kokoro.tar.bz2`;
+
+        const progressSub = DeviceEventEmitter.addListener(
+          'OlixDownloadProgress',
+          (e: {percent: number; received: number; total: number}) => {
+            setPhase({
+              kind: 'downloading-voice',
+              progress: {percent: e.percent, received: e.received, total: e.total, etaSeconds: 0},
+            });
+          },
+        );
+        setPhase({kind: 'downloading-voice', progress: {percent: 0, received: 0, total: 0, etaSeconds: 0}});
+        try {
+          await downloadFile(KOKORO_URL, tarPath);
+        } finally {
+          progressSub.remove();
+        }
+
+        setPhase({kind: 'extracting-voice'});
+        await extractTarBz2(tarPath, kokoroBaseDir);
+
+        await AsyncStorage.setItem(KOKORO_KEY, kokoroDir);
+
+        setPhase({kind: 'loading'});
+        await initializeTTS(kokoroDir);
+      } catch (err) {
+        logger.error('DownloadScreen: Kokoro setup failed', err);
+        // Non-fatal — app works without voice
+      }
+    } else {
+      try {
+        await initializeTTS(kokoroReady);
+      } catch (err) {
+        logger.error('DownloadScreen: Kokoro init failed', err);
+      }
+    }
+
+    // 4. Check for model update (only when flag is enabled)
     if (getFlag('modelUpdatesEnabled')) {
       const shouldUpdate = await checkForModelUpdate();
       if (shouldUpdate) {
@@ -94,7 +152,8 @@ export function DownloadScreen({navigation}: Props): React.JSX.Element {
       }
     }
 
-    navigation.replace('ConversationList');
+    const seen = await AsyncStorage.getItem('@olix/welcome_shown');
+    navigation.replace(seen ? 'MainTabs' : 'Welcome');
   }, [navigation]);
 
   useEffect(() => {
@@ -105,18 +164,40 @@ export function DownloadScreen({navigation}: Props): React.JSX.Element {
   }, [run]);
 
   return (
-    <View style={styles.container}>
-      {phase.kind === 'checking' && <CheckingView />}
-      {phase.kind === 'downloading' && <DownloadingView progress={phase.progress} />}
-      {phase.kind === 'loading' && <LoadingView />}
-      {phase.kind === 'error' && (
-        <ErrorView
-          message={phase.message}
-          onRetry={() => {
-            void run();
-          }}
-        />
-      )}
+    <View style={styles.screen}>
+      {storageWarning ? (
+        <StorageWarningBanner message={storageWarning} onDismiss={() => setStorageWarning(null)} />
+      ) : null}
+      <View style={styles.container}>
+        {phase.kind === 'checking' && <CheckingView />}
+        {phase.kind === 'downloading' && <DownloadingView title="Downloading Gemma model" progress={phase.progress} />}
+        {phase.kind === 'loading' && <LoadingView />}
+        {phase.kind === 'downloading-voice' && <DownloadingView title="Downloading voice model…" progress={phase.progress} />}
+        {phase.kind === 'extracting-voice' && <ExtractingView />}
+        {phase.kind === 'error' && (
+          <ErrorView
+            message={phase.message}
+            onRetry={() => {
+              void run();
+            }}
+          />
+        )}
+      </View>
+    </View>
+  );
+}
+
+// ─── Storage warning banner ───────────────────────────────────────────────────
+
+type StorageWarningBannerProps = {message: string; onDismiss: () => void};
+
+function StorageWarningBanner({message, onDismiss}: StorageWarningBannerProps): React.JSX.Element {
+  return (
+    <View style={styles.warningBanner}>
+      <Text style={styles.warningText}>{message}</Text>
+      <TouchableOpacity onPress={onDismiss} hitSlop={8}>
+        <Text style={styles.warningDismiss}>{'✕'}</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -163,9 +244,9 @@ function CheckingView(): React.JSX.Element {
   );
 }
 
-type DownloadingViewProps = {progress: DownloadProgress};
+type DownloadingViewProps = {title: string; progress: DownloadProgress};
 
-function DownloadingView({progress}: DownloadingViewProps): React.JSX.Element {
+function DownloadingView({title, progress}: DownloadingViewProps): React.JSX.Element {
   const {percent, received, total, etaSeconds} = progress;
 
   const receivedMB = (received / 1024 / 1024).toFixed(1);
@@ -174,13 +255,22 @@ function DownloadingView({progress}: DownloadingViewProps): React.JSX.Element {
 
   return (
     <>
-      <Text style={styles.title}>{'Downloading Gemma model'}</Text>
+      <Text style={styles.title}>{title}</Text>
       <View style={styles.barTrack}>
         <View style={[styles.barFill, {width: `${percent}%`}]} />
       </View>
       <Text style={styles.percent}>{`${percent}%`}</Text>
       <Text style={styles.detail}>{`${receivedMB} MB / ${totalMB} MB`}</Text>
       {etaLabel ? <Text style={styles.detail}>{`ETA ${etaLabel}`}</Text> : null}
+    </>
+  );
+}
+
+function ExtractingView(): React.JSX.Element {
+  return (
+    <>
+      <ActivityIndicator size="large" color="#000" />
+      <Text style={styles.label}>{'Preparing voice model…'}</Text>
     </>
   );
 }
@@ -223,12 +313,36 @@ function formatEta(seconds: number): string {
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+  },
   container: {
     alignItems: 'center',
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: 32,
     gap: 12,
+  },
+  warningBanner: {
+    alignItems: 'center',
+    backgroundColor: '#FFF3CD',
+    borderBottomColor: '#FFE08A',
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+  },
+  warningText: {
+    color: '#7A5C00',
+    flex: 1,
+    fontSize: 13,
+  },
+  warningDismiss: {
+    color: '#7A5C00',
+    fontSize: 14,
+    fontWeight: '600',
+    marginLeft: 8,
   },
   title: {
     color: '#111',

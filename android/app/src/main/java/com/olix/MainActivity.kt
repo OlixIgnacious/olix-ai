@@ -15,10 +15,12 @@ class MainActivity : ReactActivity() {
    */
   override fun onCreate(savedInstanceState: Bundle?) {
     setTheme(R.style.AppTheme)
-    super.onCreate(savedInstanceState)
+    // Pass null so Android never tries to restore react-native-screens fragments,
+    // which always throws IllegalStateException when restored.
+    super.onCreate(null)
   }
 
-  override fun getMainComponentName(): String = "Olix"
+  override fun getMainComponentName(): String = "Exis"
 
   override fun createReactActivityDelegate(): ReactActivityDelegate =
       DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled)

@@ -28,26 +28,6 @@ local.properties
 !debug.keystore
 .kotlin/
 
-# ─── iOS / Xcode ──────────────────────────────────────────────────────────────
-*.pbxuser
-!default.pbxuser
-*.mode1v3
-!default.mode1v3
-*.mode2v3
-!default.mode2v3
-*.perspectivev3
-!default.perspectivev3
-xcuserdata/
-*.xccheckout
-*.moved-aside
-DerivedData/
-*.hmap
-*.ipa
-*.xcuserstate
-**/.xcode.env.local
-**/Pods/
-/vendor/bundle/
-
 # ─── Metro ────────────────────────────────────────────────────────────────────
 .metro-health-check*
 *.metro-bundler-cache/
@@ -59,17 +39,10 @@ coverage/
 jest-cache/
 jest-config/
 
-# ─── Fastlane ─────────────────────────────────────────────────────────────────
-fastlane/report.xml
-fastlane/Preview.html
-fastlane/screenshots/
-fastlane/test_output/
-
 # ─── Bundle artifacts ─────────────────────────────────────────────────────────
 *.jsbundle
 
 # ─── Environment / secrets ────────────────────────────────────────────────────
-# Never commit real secrets. Commit only .env.*.example template files.
 .env
 .env.local
 .env.dev
