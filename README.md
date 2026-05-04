@@ -13,7 +13,8 @@
 
 [![Download APK](https://img.shields.io/badge/↓%20Download%20APK-v1.0.0-000?style=for-the-badge)](https://github.com/OlixIgnacious/boxi-ai/releases/latest)&nbsp;
 [![Android](https://img.shields.io/badge/Android-7.0+-3DDC84?style=for-the-badge&logo=android&logoColor=white)](.)&nbsp;
-[![Offline](https://img.shields.io/badge/100%25%20Offline-000?style=for-the-badge)](.)
+[![Offline](https://img.shields.io/badge/100%25%20Offline-000?style=for-the-badge)](.)&nbsp;
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue?style=for-the-badge)](LICENSE)
 
 <br />
 
