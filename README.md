@@ -28,7 +28,7 @@ Boxi is a fully offline AI assistant for Android. No servers. No subscriptions. 
   <img src="assets/screenshots/01-home.png" width="22%" />&nbsp;&nbsp;
   <img src="assets/screenshots/02-chat.png" width="22%" />&nbsp;&nbsp;
   <img src="assets/screenshots/03-voice.png" width="22%" />&nbsp;&nbsp;
-  <img src="assets/screenshots/04-chats.png" width="22%" />
+  <!-- <img src="assets/screenshots/04-chats.png" width="22%" /> -->
 </p>
 
 ---
